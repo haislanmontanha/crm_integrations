@@ -1,6 +1,8 @@
 
 import os
 import requests
+import json
+from types import SimpleNamespace
 
 api_contact = 'https://app.nectarcrm.com.br/crm/api/1/contatos/'
 api_oportunidades = 'https://app.nectarcrm.com.br/crm/api/1/oportunidades/'
@@ -142,8 +144,8 @@ def getDataContatos(request):
         # Code here will only run if the request is successful
         # print(request.url)
         # print(f"Status Code: {request.status_code}, Content: {request.json()}")
+
         resposta_json = request.json()
-        # print(resposta_json[0]["id"])
 
         userId = resposta_json[0]["id"]
         getUser(userId)
@@ -151,6 +153,7 @@ def getDataContatos(request):
     elif (request.status_code == 404):
         print("Result not found!")
         # Code here will react to failed requests
- 
+
+
 if __name__ == '__main__':
    crm_nectar()

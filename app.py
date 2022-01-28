@@ -20,7 +20,7 @@ def nectarcrm():
   return "Hello, World!"
 
 @app.post("/nectarcrm")
-def add_nectarcrm():
+def start_nectarcrm():
     if request.is_json:
         wz = request.get_json()
         telefone = wz["contact"]["key"]
@@ -28,18 +28,21 @@ def add_nectarcrm():
         request_telefone = requests.get(api_contact+'telefone/'+telefone, params=params, headers=headers)
         
         if (request_telefone.status_code == 200):
-            # print("The request was a success!")
+            print("The request was a success!")
             # Code here will only run if the request is successful
-            # print(request.url)
-            # print(f"Status Code: {request.status_code}, Content: {request.json()}")
             resposta_json = request_telefone.json()
-            # print(resposta_json[0]["id"])
+            json_size = len(resposta_json)
 
-            userId = resposta_json[0]["id"]
-            request_user = requests.get(api_contact+str(userId), params=params, headers=headers)
-            resposta_json = requrequest_userest.json()
-            # print(resposta_json)
-            return resposta_json, 201
+            print(f"Status Code: {request_telefone.status_code}, Content: {request_telefone.json()}, Size Json {json_size}")
+
+            if json_size == 0:
+                return resposta_json, 201
+            else:
+                userId = resposta_json[0]["id"]
+                request_user = requests.get(api_contact+str(userId), params=params, headers=headers)
+                resposta_json = request_user.json()
+                
+                return resposta_json, 201
 
         elif (request_telefone.status_code == 404):
             print("Result not found!")
