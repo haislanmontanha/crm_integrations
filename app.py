@@ -36,17 +36,134 @@ def start_nectarcrm():
             print(f"Status Code: {request_telefone.status_code}, Content: {request_telefone.json()}, Size Json {json_size}")
 
             if json_size == 0:
-                return resposta_json, 201
+                json_menu = {
+                    "type":"MENU",
+                    "text":"Olá, não encontramos seu contato pelo número do celular. Informe qual o opção que deseja informar: ",
+                    "attachments":[
+                        {
+                            "position":"BEFORE",
+                            "type":"IMAGE",
+                            "name":"image.png",
+                            "url":"https://itsstecnologia.com.br/blogs/wp-content/uploads/2021/04/integracao-na-empresa.png"
+                        }
+                    ],
+                    "items":[
+                        {
+                            "number":1,
+                            "text":"CPF",
+                            "callback":{
+                                "endpoint":"https://5000-haislanmontanha-gev-55t1r8kq5qw.ws-us29.gitpod.io/nectarcrm_cpf",
+                                "data":{
+                                }
+                            }
+                        },
+                        {
+                            "number":2,
+                            "text":"CNPJ",
+                            "callback":{
+                                "endpoint":"https://5000-haislanmontanha-gev-55t1r8kq5qw.ws-us29.gitpod.io/nectarcrm_cnpj",
+                                "data":{
+                                }
+                            }
+                        },
+                        {
+                            "number":3,
+                            "text":"Telefone",
+                            "callback":{
+                                "endpoint":"https://5000-haislanmontanha-gev-55t1r8kq5qw.ws-us29.gitpod.io/nectarcrm_telefone",
+                                "data":{
+                                }
+                            }
+                        },
+                        {
+                            "number":4,
+                            "text":"Email",
+                            "callback":{
+                                "endpoint":"https://5000-haislanmontanha-gev-55t1r8kq5qw.ws-us29.gitpod.io/nectarcrm_email",
+                                "data":{
+                                }
+                            }
+                        }
+                    ]
+                }
+                return json_menu, 201
             else:
                 userId = resposta_json[0]["id"]
                 request_user = requests.get(api_contact+str(userId), params=params, headers=headers)
                 resposta_json = request_user.json()
-                
-                return resposta_json, 201
+
+                json_question = {
+                    "type": "QUESTION",
+                    "text": "Olá "+resposta_json['nome']+", informe o email para buscar a oportunidade em aberto.",
+                    "attachments": [{
+                        "position": "BEFORE",
+                        "type": "IMAGE",
+                        "name": "image.png",
+                        "url": "https://itsstecnologia.com.br/blogs/wp-content/uploads/2021/04/integracao-na-empresa.png"
+                    }],
+                    "callback": {
+                        "endpoint": "https://5000-haislanmontanha-gev-55t1r8kq5qw.ws-us29.gitpod.io/nectarcrm_oportunidade",
+                        "data": {
+                            
+                        }
+                    }
+                    }
+
+                return json_question, 201
 
         elif (request_telefone.status_code == 404):
             print("Result not found!")
-        #sreturn wz, 201
     return {"error": "Request must be JSON"}, 415
 
 
+@app.post("/nectarcrm_oportunidade")
+def getoportunidade_nectarcrm():
+    if request.is_json:
+        return {'msg':'Chegou aqui - nectarcrm_oportunidade'}, 201
+    elif (request_telefone.status_code == 404):
+        print("Result not found!")
+        return {'msg':'Result not found!'}, 201
+    #sreturn wz, 201
+    return {"error": "Request must be JSON"}, 415
+
+
+@app.post("/nectarcrm_cpf")
+def getcpf_nectarcrm():
+    if request.is_json:
+        return {'msg':'Chegou aqui - nectarcrm_cpf'}, 201
+    elif (request_telefone.status_code == 404):
+        print("Result not found!")
+        return {'msg':'Result not found!'}, 201
+    #sreturn wz, 201
+    return {"error": "Request must be JSON"}, 415
+
+@app.post("/nectarcrm_cnpj")
+def getcnpj_nectarcrm():
+    if request.is_json:
+        return {'msg':'Chegou aqui - nectarcrm_cnpj'}, 201
+    elif (request_telefone.status_code == 404):
+        print("Result not found!")
+        return {'msg':'Result not found!'}, 201
+    #sreturn wz, 201
+    return {"error": "Request must be JSON"}, 415
+
+@app.post("/nectarcrm_telefone")
+def gettelefone_nectarcrm():
+    if request.is_json:
+        return {'msg':'Chegou aqui - nectarcrm_telefone'}, 201
+    elif (request_telefone.status_code == 404):
+        print("Result not found!")
+        return {'msg':'Result not found!'}, 201
+    #sreturn wz, 201
+    return {"error": "Request must be JSON"}, 415
+
+
+@app.post("/nectarcrm_email")
+def getemail_nectarcrm():
+    if request.is_json:
+        return {'msg':'Chegou aqui = nectarcrm_email'}, 201
+    elif (request_telefone.status_code == 404):
+        print("Result not found!")
+        return {'msg':'Result not found!'}, 201
+    #sreturn wz, 201
+    return {"error": "Request must be JSON"}, 415
