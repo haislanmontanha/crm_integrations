@@ -1,6 +1,7 @@
 # app.py
 import os
 import requests
+import json
 from flask import Flask, request, jsonify
 
 app = Flask(__name__)
@@ -12,6 +13,10 @@ menu_cpf = "cpf"
 menu_cnpj = "cnpj"
 menu_telefone = "telefone"
 menu_email = "email"
+menu_statistics = "statistics"
+menu_proximaAtividade = "proximaAtividade"
+menu_qualificacao = "qualificacao"
+menu_oportunidade = "oportunidade"
 
 headers = {
     'Accept': 'application/json', 
@@ -22,55 +27,111 @@ params = {'api_token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2NDI3OTA
 
 def menu_inicial(msg):
     return {
-            "type":"MENU",
-            "text": msg,
-            "attachments":[
-                {
-                    "position":"BEFORE",
-                    "type":"IMAGE",
-                    "name":"image.png",
-                    "url":"https://itsstecnologia.com.br/blogs/wp-content/uploads/2021/04/integracao-na-empresa.png"
-                }
-            ],
-            "items":[
-                {
-                    "number":1,
-                    "text":"CPF",
-                    "callback":{
-                        "endpoint": api_local+"nectarcrm_cpf",
-                        "data":{
-                        }
-                    }
-                },
-                {
-                    "number":2,
-                    "text":"CNPJ",
-                    "callback":{
-                        "endpoint": api_local+"nectarcrm_cnpj",
-                        "data":{
-                        }
-                    }
-                },
-                {
-                    "number":3,
-                    "text":"Telefone",
-                    "callback":{
-                        "endpoint": api_local+"nectarcrm_telefone",
-                        "data":{
-                        }
-                    }
-                },
-                {
-                    "number":4,
-                    "text":"Email",
-                    "callback":{
-                        "endpoint": api_local+"nectarcrm_email",
-                        "data":{
-                        }
+        "type":"MENU",
+        "text": msg,
+        "attachments":[
+            {
+                "position":"BEFORE",
+                "type":"IMAGE",
+                "name":"image.png",
+                "url":"https://itsstecnologia.com.br/blogs/wp-content/uploads/2021/04/integracao-na-empresa.png"
+            }
+        ],
+        "items":[
+            {
+                "number":1,
+                "text":"CPF",
+                "callback":{
+                    "endpoint": api_local+"nectarcrm_cpf",
+                    "data":{
                     }
                 }
-            ]
-        }
+            },
+            {
+                "number":2,
+                "text":"CNPJ",
+                "callback":{
+                    "endpoint": api_local+"nectarcrm_cnpj",
+                    "data":{
+                    }
+                }
+            },
+            {
+                "number":3,
+                "text":"Telefone",
+                "callback":{
+                    "endpoint": api_local+"nectarcrm_telefone",
+                    "data":{
+                    }
+                }
+            },
+            {
+                "number":4,
+                "text":"Email",
+                "callback":{
+                    "endpoint": api_local+"nectarcrm_email",
+                    "data":{
+                    }
+                }
+            }
+        ]
+    }
+
+def menu_user(user_json, msg):
+    return {
+        "type":"MENU",
+        "text": msg,
+        "attachments":[
+            {
+                "position":"BEFORE",
+                "type":"IMAGE",
+                "name":"image.png",
+                "url":"https://itsstecnologia.com.br/blogs/wp-content/uploads/2021/04/integracao-na-empresa.png"
+            }
+        ],
+        "items":[
+            {
+                "number":1,
+                "text":"Analisar Estatistica",
+                "callback":{
+                    "endpoint": api_local+"nectarcrm_statistics",
+                    "data":{
+                        "user": user_json
+                    }
+                }
+            },
+            {
+                "number":2,
+                "text":"Próxima tarefa",
+                "callback":{
+                    "endpoint": api_local+"nectarcrm_proximaAtividade",
+                    "data":{
+                        "user": user_json
+                    }
+                }
+            },
+            {
+                "number":3,
+                "text":"Qualificações",
+                "callback":{
+                    "endpoint": api_local+"nectarcrm_qualificacao",
+                    "data":{
+                        "user": user_json
+                    }
+                }
+            },
+            {
+                "number":4,
+                "text":"Oportunidade",
+                "callback":{
+                    "endpoint": api_local+"nectarcrm_oportunidade",
+                    "data":{
+                        "user": user_json
+                    }
+                }
+            }
+        ]
+    }
 
 def response_question(text, callback):
     return {
@@ -100,11 +161,7 @@ def informacao_invalida(msg_menu):
     elif msg_menu == menu_email:
         return response_question("O "+msg_menu+" é inválido. Por favor informe um "+msg_menu+" válido.", api_local+"nectarcrm_email")
     else:
-        return menu_inicial("O "+msg_menu+" é inválido. Por favor informe um "+msg_menu+" válido.")
-
-@app.route("/")
-def nectarcrm():
-  return "Hello, World!"
+        return menu_inicial("Olá, por favor informe uma das seguintes informações.")
 
 def getUser(request_mz, msg_menu):
 
@@ -116,22 +173,26 @@ def getUser(request_mz, msg_menu):
 
         print(f"Status Code: {request_mz.status_code}, Content: {resposta_json}, Size Json {json_size}")
 
-        msg_erro_menu = "Olá, não encontramos seu contato pelo "+msg_menu+". Informe qual o opção que deseja informar: "
+        msg_erro_menu = "Olá, não encontramos seu contato pelo "+msg_menu+". Informe uma das seguintes opções: "
 
         if json_size == 0:
             return informacao_invalida(msg_menu), 201
         else:
 
-            if resposta_json['message'] is not None:
+            s1 = json.dumps(resposta_json)
+            user = json.loads(s1)
+            
+            if 'message' not in user:
 
+                userId = resposta_json[0]["id"]
+                request_user = requests.get(api_contact+str(userId), params=params, headers=headers)
+                user_json = request_user.json()
+
+                msg = "Olá "+user_json['nome']+", informe qual opção deseja consultar"
+
+                return menu_user(user_json, msg), 201
+            else:
                 return informacao_invalida(msg_menu), 201
-
-            elif resposta_json[0]["id"] is not None:
-
-                request_user = requests.get(api_contact+str(resposta_json[0]["id"]), params=params, headers=headers)
-                resposta_json = request_user.json()
-
-                return response_question("Olá "+resposta_json['nome']+", informe o email para buscar a oportunidade em aberto.", api_local+"nectarcrm_oportunidade"), 201
                 
     elif (request_mz.status_code == 404):
         return {"error": "Request must be JSON"}, 404
@@ -144,7 +205,7 @@ def start_nectarcrm():
 
         request_mz = requests.get(api_contact+'telefone/'+telefone, params=params, headers=headers) 
         
-        return getUser(request_mz, str(menu_telefone))
+        return getUser(request_mz, "menu_inicial")
 
     return {"error": "Request must be JSON"}, 415
 
