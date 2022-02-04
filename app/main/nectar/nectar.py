@@ -4,14 +4,19 @@ import requests
 import json
 from flask import Flask, request, jsonify
 from datetime import datetime
+from main.utils.utils import Utils
 
 
 app = Flask(__name__)
 
+util = Utils();
+
 api_contact = 'https://app.nectarcrm.com.br/crm/api/1/contatos/'
 api_oportunidades = 'https://app.nectarcrm.com.br/crm/api/1/oportunidades/'
 api_qualificacoes = 'https://app.nectarcrm.com.br/crm/api/1/qualificacoes/'
-api_local= "https://5000-haislanmontanha-gev-55t1r8kq5qw.ws-us29.gitpod.io/1643277681253-convertido.pdf"
+url_logo = "https://itsstecnologia.com.br/blogs/wp-content/uploads/2021/04/integracao-na-empresa.png"
+
+
 menu_cpf = "cpf"
 menu_cnpj = "cnpj"
 menu_telefone = "telefone"
@@ -37,7 +42,7 @@ def menu_inicial(msg):
                 "position":"BEFORE",
                 "type":"IMAGE",
                 "name":"image.png",
-                "url":"https://itsstecnologia.com.br/blogs/wp-content/uploads/2021/04/integracao-na-empresa.png"
+                "url": url_logo
             }
         ],
         "items":[
@@ -45,7 +50,7 @@ def menu_inicial(msg):
                 "number":1,
                 "text":"CPF",
                 "callback":{
-                    "endpoint": api_local+"nectarcrm_cpf",
+                    "endpoint": util.getUrlLocal()+"nectarcrm_cpf",
                     "data":{
                     }
                 }
@@ -54,7 +59,7 @@ def menu_inicial(msg):
                 "number":2,
                 "text":"CNPJ",
                 "callback":{
-                    "endpoint": api_local+"nectarcrm_cnpj",
+                    "endpoint": util.getUrlLocal()+"nectarcrm_cnpj",
                     "data":{
                     }
                 }
@@ -63,7 +68,7 @@ def menu_inicial(msg):
                 "number":3,
                 "text":"Telefone",
                 "callback":{
-                    "endpoint": api_local+"nectarcrm_telefone",
+                    "endpoint": util.getUrlLocal()+"nectarcrm_telefone",
                     "data":{
                     }
                 }
@@ -72,7 +77,7 @@ def menu_inicial(msg):
                 "number":4,
                 "text":"Email",
                 "callback":{
-                    "endpoint": api_local+"nectarcrm_email",
+                    "endpoint": util.getUrlLocal()+"nectarcrm_email",
                     "data":{
                     }
                 }
@@ -89,7 +94,7 @@ def menu_user(user_json, msg):
                 "position":"BEFORE",
                 "type":"IMAGE",
                 "name":"image.png",
-                "url":"https://itsstecnologia.com.br/blogs/wp-content/uploads/2021/04/integracao-na-empresa.png"
+                "url": url_logo
             }
         ],
         "items":[
@@ -97,32 +102,12 @@ def menu_user(user_json, msg):
                 "number":1,
                 "text":"Próxima tarefa",
                 "callback":{
-                    "endpoint": api_local+"nectarcrm_proximaAtividade",
+                    "endpoint": util.getUrlLocal()+"nectarcrm_proximaAtividade",
                     "data":{
                         "user": user_json
                     }
                 }
             }
-            # {
-            #     "number":2,
-            #     "text":"Qualificações",
-            #     "callback":{
-            #         "endpoint": api_local+"nectarcrm_qualificacao",
-            #         "data":{
-            #             "user": user_json
-            #         }
-            #     }
-            # },
-            # {
-            #     "number":3,
-            #     "text":"Oportunidade",
-            #     "callback":{
-            #         "endpoint": api_local+"nectarcrm_oportunidade",
-            #         "data":{
-            #             "user": user_json
-            #         }
-            #     }
-            # }
         ]
     }
 
@@ -134,7 +119,7 @@ def response_question(text, callback):
             "position": "BEFORE",
             "type": "IMAGE",
             "name": "image.png",
-            "url": "https://itsstecnologia.com.br/blogs/wp-content/uploads/2021/04/integracao-na-empresa.png"
+            "url":url_logo
         }],
         "callback": {
             "endpoint": callback,
@@ -153,26 +138,26 @@ def response_information(text, urldoc):
                 "position":"BEFORE",
                 "type":"IMAGE",
                 "name":"image.png",
-                "url":"https://itsstecnologia.com.br/blogs/wp-content/uploads/2021/04/integracao-na-empresa.png"
+                "url": url_logo
             },
             {
                 "position":"AFTER",
                 "type":"DOCUMENT",
                 "name":"document.pdf",
-                "url":"http://www.africau.edu/images/default/sample.pdf"
+                "url": urldoc
             }
         ]
     }
 
-def informacao_invalida(msg_menu):
+def informacao_invalida(msg_menu, url_callback):
     if msg_menu == menu_cpf:
-        return response_question("O "+msg_menu+" é inválido. Por favor informe um "+msg_menu+" válido.", api_local+"nectarcrm_cpf")
+        return response_question("O "+msg_menu+" é inválido. Por favor informe um "+msg_menu+" válido.", url_callback)
     elif msg_menu == menu_cnpj:
-        return response_question("O "+msg_menu+" é inválido. Por favor informe um "+msg_menu+" válido.", api_local+"nectarcrm_cnpj")
+        return response_question("O "+msg_menu+" é inválido. Por favor informe um "+msg_menu+" válido.", url_callback )
     elif msg_menu == menu_telefone:
-        return response_question("O "+msg_menu+" é inválido. Por favor informe um "+msg_menu+" válido.", api_local+"nectarcrm_telefone")
+        return response_question("O "+msg_menu+" é inválido. Por favor informe um "+msg_menu+" válido.", url_callback)
     elif msg_menu == menu_email:
-        return response_question("O "+msg_menu+" é inválido. Por favor informe um "+msg_menu+" válido.", api_local+"nectarcrm_email")
+        return response_question("O "+msg_menu+" é inválido. Por favor informe um "+msg_menu+" válido.", url_callback )
     else:
         return menu_inicial("Olá, por favor informe uma das seguintes informações.")
 
@@ -189,7 +174,7 @@ def getUser(request_mz, msg_menu):
         msg_erro_menu = "Olá, não encontramos seu contato pelo "+msg_menu+". Informe uma das seguintes opções: "
 
         if json_size == 0:
-            return informacao_invalida(msg_menu), 201
+            return informacao_invalida(msg_menu, ""), 201
         else:
 
             s1 = json.dumps(resposta_json)
@@ -205,7 +190,7 @@ def getUser(request_mz, msg_menu):
 
                 return menu_user(user_json, msg), 201
             else:
-                return informacao_invalida(msg_menu), 201
+                return informacao_invalida(msg_menu,""), 201
                 
     elif (request_mz.status_code == 404):
         return {"error": "Request must be JSON"}, 404
@@ -311,7 +296,7 @@ def getoportunidade_nectarcrm():
                     print(f"Status Code: {request_mz.status_code}, Content: {resposta_json}, Size Json {json_size}")
 
                     if json_size == 0:
-                        return informacao_invalida(menu_proximaAtividade), 201
+                        return informacao_invalida(menu_proximaAtividade, util.getUrlLocal()+"nectarcrm_oportunidade"), 201
                     else:
                         
                         return response_information("", ""), 201
@@ -355,7 +340,7 @@ def getproximaAtividade_nectarcrm():
                     print(f"Status Code: {request_mz.status_code}, Content: {resposta_json}, Size Json {json_size}")
 
                     if json_size == 0:
-                        return informacao_invalida(menu_proximaAtividade), 201
+                        return informacao_invalida(menu_proximaAtividade, util.getUrlLocal()+"nectarcrm_proximaAtividade"), 201
                     else:
                         titulo = resposta_json["titulo"]
                         descricao = resposta_json["descricao"]
@@ -415,9 +400,8 @@ def getstatistics_nectarcrm():
                     print(f"Status Code: {request_mz.status_code}, Content: {resposta_json}, Size Json {json_size}")
 
                     if json_size == 0:
-                        return informacao_invalida(menu_statistics), 201
+                        return informacao_invalida(menu_statistics, util.getUrlLocal()+"nectarcrm_statistics"), 201
                     else:
-                       
                         return response_information("", ""), 201
                             
             elif (request_mz.status_code == 404):
@@ -459,7 +443,7 @@ def getqualificacao_nectarcrm():
                     print(f"Status Code: {request_mz.status_code}, Content: {resposta_json}, Size Json {json_size}")
 
                     if json_size == 0:
-                        return informacao_invalida(menu_proximaAtividade), 201
+                        return informacao_invalida(menu_proximaAtividade, util.getUrlLocal()+"nectarcrm_qualificacao"), 201
                     else:
                        
                         return response_information("", ""), 201
