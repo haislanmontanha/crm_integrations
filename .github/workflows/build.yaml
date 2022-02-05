@@ -2,7 +2,7 @@ name: Build
 
 env:
   app_name: ${{ github.event.repository.name }}
-  ghub_pkg_token: ${{ secrets.GHUB_PKG_TOKEN }}
+  ghub_pkg_token: ${{ secrets.GHUB_CODE_TOKEN }}
 
 on:
   pull_request:
