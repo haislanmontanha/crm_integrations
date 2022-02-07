@@ -2,9 +2,10 @@ import os
 import requests
 import json
 from flask import Flask, request, jsonify
-from flask_restplus import Resource, Namespace, fields
+from flask_restx import Resource, Api, Namespace
 from datetime import datetime
-from main.utils.utils import Utils
+
+from app.main.utils.utils import Utils as Utils
 
 api = Namespace('Nectar',description='Integração Nectar CRM')
 
