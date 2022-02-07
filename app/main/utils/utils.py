@@ -6,9 +6,6 @@ from flask_restx import Resource, Api, Namespace
 
 utils = Namespace('Utils',description='Classe de informações')
 
-if __name__ == '__main__':
-    app.run(debug=True)
-
 class Utils(Resource):
 
     def getUrlLocal():

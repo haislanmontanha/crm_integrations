@@ -14,6 +14,8 @@ util = Utils();
 api_contact = 'https://app.nectarcrm.com.br/crm/api/1/contatos/'
 api_oportunidades = 'https://app.nectarcrm.com.br/crm/api/1/oportunidades/'
 api_qualificacoes = 'https://app.nectarcrm.com.br/crm/api/1/qualificacoes/'
+url_logo = "https://itsstecnologia.com.br/blogs/wp-content/uploads/2021/04/integracao-na-empresa.png"
+
 
 api_local= "https://5000-haislanmontanha-gev-55t1r8kq5qw.ws-us30.gitpod.io/"
 
@@ -102,7 +104,7 @@ def menu_user(user_json, msg):
                 "number":1,
                 "text":"Próxima tarefa",
                 "callback":{
-                    "endpoint": util.getUrlLocal()+"nectarcrm_proximaAtividade",
+                    "endpoint": api_local+"nectarcrm_proximaAtividade",
                     "data":{
                         "user": user_json
                     }
@@ -202,3 +204,17 @@ class NectarController(Resource):
     
     def get(self):
          return "Hello World!", 200
+
+    def post(self):
+
+        if request.is_json:
+            mz = request.get_json()
+            telefone = mz["contact"]["key"]
+
+            request_mz = requests.get(api_contact+'telefone/'+telefone, params=params, headers=headers) 
+            
+            return getUser(request_mz, "menu_inicial")
+
+        return {"error": "Request must be JSON"}, 415
+
+        # return PessoaDb.adicionar(request.json), 201
