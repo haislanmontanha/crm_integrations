@@ -35,6 +35,90 @@ headers = {
 
 params = {'api_token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2NDI3OTA4MDgsImV4cCI6MTY3NDMyMjM2OSwidXNlckxvZ2luIjoiaGFpc2xhbi5uYXNjaW1lbnRvQGdtYWlsLmNvbSIsInVzZXJJZCI6IjEyNjQ2NiIsInVzdWFyaW9NYXN0ZXJJZCI6IjEyNjQ2NSJ9.08lkZ8ou0mxda9Hq45J07elTRTpD-2MZYS6pYcMnOcw'}
 
+def json_start():
+    return {
+            "id": 215123,
+            "text": "Hello world!",
+            "contact": {
+                "uid": "15295",
+                "type": "WHATSAPP",
+                "key": "+5514991670521",
+                "name": "Haislan",
+                "fields": {
+                "cpf": "38724981850",
+                "celular": "(11) 11111-1111"
+                }
+            },
+            "data": {}
+        }
+
+def json_user():
+    return {
+            "id": 215123,
+            "text": "Hello world!",
+            "contact": {
+                "uid": "15295",
+                "type": "WHATSAPP",
+                "key": "+5514991670521",
+                "name": "Haislan",
+                "fields": {
+                "cpf": "38724981850",
+                "celular": "(11) 11111-1111"
+                }
+            },
+            "data": {
+                "user": {
+                "ativo": True,
+                "autor": {
+                    "id": 126466,
+                    "login": "haislan.nascimento@gmail.com",
+                    "nome": "Haislan Nascimento Costa Montanha"
+                },
+                "autorAtualizacao": {
+                    "id": 126466,
+                    "login": "haislan.nascimento@gmail.com",
+                    "nome": "Haislan Nascimento Costa Montanha"
+                },
+                "blocked": False,
+                "camposPersonalizados": {},
+                "camposPersonalizadosObject": {},
+                "compromissos": 0,
+                "constante": 1,
+                "contatos": [],
+                "contatosPai": [],
+                "cpf": "38724981850",
+                "dataAtualizacao": "2022-01-24T20:50:19.003Z",
+                "dataCriacao": "2022-01-21T18:57:04.260Z",
+                "email": "eloide@gmail.com",
+                "emailPrincipal": "eloide@gmail.com",
+                "emails": [
+                    "eloide@gmail.com"
+                ],
+                "empresa": False,
+                "empresasAtuais": [],
+                "enderecos": [],
+                "id": 32814773,
+                "integradoRD": False,
+                "isEmpresa": False,
+                "listas": [],
+                "nome": "Eloide Bispo Nascimento",
+                "oportunidades": 1,
+                "responsavel": {
+                    "id": 126466,
+                    "login": "haislan.nascimento@gmail.com",
+                    "nome": "Haislan Nascimento Costa Montanha"
+                },
+                "tarefas": 1,
+                "telefone": "+5514991670521",
+                "telefonePrincipal": "+5514991670521",
+                "telefones": [
+                    "+5514991670521"
+                ]
+                }
+            }
+        }
+
+
 def menu_inicial(msg):
     return {
         "type":"MENU",
@@ -52,7 +136,7 @@ def menu_inicial(msg):
                 "number":1,
                 "text":"CPF",
                 "callback":{
-                    "endpoint": util.getUrlLocal()+"nectarcrm_cpf",
+                    "endpoint": api_local+"nectarcrm_cpf",
                     "data":{
                     }
                 }
@@ -61,7 +145,7 @@ def menu_inicial(msg):
                 "number":2,
                 "text":"CNPJ",
                 "callback":{
-                    "endpoint": util.getUrlLocal()+"nectarcrm_cnpj",
+                    "endpoint":api_local+"nectarcrm_cnpj",
                     "data":{
                     }
                 }
@@ -70,7 +154,7 @@ def menu_inicial(msg):
                 "number":3,
                 "text":"Telefone",
                 "callback":{
-                    "endpoint": util.getUrlLocal()+"nectarcrm_telefone",
+                    "endpoint": api_local+"nectarcrm_telefone",
                     "data":{
                     }
                 }
@@ -79,7 +163,7 @@ def menu_inicial(msg):
                 "number":4,
                 "text":"Email",
                 "callback":{
-                    "endpoint": util.getUrlLocal()+"nectarcrm_email",
+                    "endpoint": api_local+"nectarcrm_email",
                     "data":{
                     }
                 }
@@ -204,7 +288,7 @@ class NectarController(Resource):
     
     def get(self):
          return "Hello World!", 200
-
+    @api.expect(json_start())
     def post(self):
 
         if request.is_json:
@@ -218,3 +302,51 @@ class NectarController(Resource):
         return {"error": "Request must be JSON"}, 415
 
         # return PessoaDb.adicionar(request.json), 201
+
+@api.route('/cpf')#classe que atende requisições 
+class PessoaCpfController(Resource):
+    @api.response(200, "Busca realizada com sucesso")
+    @api.expect(json_start())
+    def post(self):
+        if request.is_json:
+
+            mz = request.get_json()
+            text = mz["text"]
+
+            request_mz = requests.get(api_contact+'cpf/'+text, params=params, headers=headers)
+
+            return getUser(request_mz, menu_cpf)
+
+        return {"error": "Request must be JSON"}, 415
+
+@api.route('/cnpj')#classe que atende requisições 
+class PessoaCnpjController(Resource):
+    @api.response(200, "Busca realizada com sucesso")
+    @api.expect(json_start())
+    def post(self):
+        if request.is_json:
+
+            mz = request.get_json()
+            text = mz["text"]
+
+            request_mz = requests.get(api_contact+'cnpj/'+text, params=params, headers=headers)
+
+            return getUser(request_mz, menu_cnpj)
+
+        return {"error": "Request must be JSON"}, 415
+
+@api.route('/telefone')#classe que atende requisições 
+class PessoaTelefoneController(Resource):
+    @api.response(200, "Busca realizada com sucesso")
+    @api.expect(json_start())
+    def post(self):
+        if request.is_json:
+
+            mz = request.get_json()
+            text = mz["text"]
+
+            request_mz = requests.get(api_contact+'telefone/'+text, params=params, headers=headers)
+
+            return getUser(request_mz, menu_telefone)
+
+        return {"error": "Request must be JSON"}, 415
