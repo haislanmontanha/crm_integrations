@@ -5,11 +5,7 @@ from flask import Flask, request, jsonify
 from flask_restx import Resource, Api, Namespace
 from datetime import datetime
 
-from app.main.utils.utils import Utils as Utils
-
 api = Namespace('Nectar',description='Integração Nectar CRM')
-
-util = Utils();
 
 api_contact = 'https://app.nectarcrm.com.br/crm/api/1/contatos/'
 api_oportunidades = 'https://app.nectarcrm.com.br/crm/api/1/oportunidades/'
