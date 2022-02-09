@@ -10,14 +10,13 @@ api = Namespace('Nectar',description='Integração Nectar CRM')
 api_contact = 'https://app.nectarcrm.com.br/crm/api/1/contatos/'
 url_logo = "https://itsstecnologia.com.br/blogs/wp-content/uploads/2021/04/integracao-na-empresa.png"
 
-api_local= "https://5000-haislanmontanha-gev-55t1r8kq5qw.ws-us30.gitpod.io/"
+api_local= "https://5500-haislanmontanha-gev-55t1r8kq5qw.ws-us30.gitpod.io/api/nectar/"
 
 menu_cpf = "cpf"
 menu_cnpj = "cnpj"
 menu_phone = "telefone"
 menu_email = "email"
-menu_statistics = "statistics"
-menu_next_activity = "proximaAtividade"
+menu_next_activity = "next_activity"
 
 headers = {
     'Accept': 'application/json', 
@@ -60,7 +59,7 @@ def home_menu(msg):
                 "number":1,
                 "text":"CPF",
                 "callback":{
-                    "endpoint": api_local+"nectarcrm_cpf",
+                    "endpoint": api_local+"/search_cpf",
                     "data":{
                     }
                 }
@@ -69,7 +68,7 @@ def home_menu(msg):
                 "number":2,
                 "text":"CNPJ",
                 "callback":{
-                    "endpoint":api_local+"nectarcrm_cnpj",
+                    "endpoint":api_local+"/search_cnpj",
                     "data":{
                     }
                 }
@@ -78,7 +77,7 @@ def home_menu(msg):
                 "number":3,
                 "text":"Telefone",
                 "callback":{
-                    "endpoint": api_local+"nectarcrm_telefone",
+                    "endpoint": api_local+"/search_phone",
                     "data":{
                     }
                 }
@@ -87,7 +86,7 @@ def home_menu(msg):
                 "number":4,
                 "text":"Email",
                 "callback":{
-                    "endpoint": api_local+"nectarcrm_email",
+                    "endpoint": api_local+"/search_email",
                     "data":{
                     }
                 }
@@ -112,7 +111,7 @@ def menu_user(user_json, msg):
                 "number":1,
                 "text":"Próxima tarefa",
                 "callback":{
-                    "endpoint": api_local+"nectarcrm_proximaAtividade",
+                    "endpoint": api_local+"/search_next_activity",
                     "data":{
                         "user": user_json
                     }
@@ -206,9 +205,6 @@ def getUser(request_mz, msg_menu):
 
 @api.route('/')
 class NectarController(Resource):
-    
-    def get(self):
-         return "Hello World!", 200
 
     def post(self):
 
@@ -222,9 +218,8 @@ class NectarController(Resource):
 
         return {"error": "Request must be JSON"}, 415
 
-@api.route('/cpf')#classe que atende requisições 
+@api.route('/search_cpf')#classe que atende requisições 
 class PersonCpfController(Resource):
-    @api.response(200, "Busca realizada com sucesso")
     def post(self):
         if request.is_json:
 
@@ -237,9 +232,8 @@ class PersonCpfController(Resource):
 
         return {"error": "Request must be JSON"}, 415
 
-@api.route('/cnpj')#classe que atende requisições 
+@api.route('/search_cnpj')#classe que atende requisições 
 class PersonCnpjController(Resource):
-    @api.response(200, "Busca realizada com sucesso")
     def post(self):
         if request.is_json:
 
@@ -252,9 +246,8 @@ class PersonCnpjController(Resource):
 
         return {"error": "Request must be JSON"}, 415
 
-@api.route('/telefone')#classe que atende requisições 
+@api.route('/search_phone')#classe que atende requisições 
 class PersonPhoneController(Resource):
-    @api.response(200, "Busca realizada com sucesso")
     def post(self):
         if request.is_json:
 
@@ -267,9 +260,8 @@ class PersonPhoneController(Resource):
 
         return {"error": "Request must be JSON"}, 415
 
-@api.route('/email')#classe que atende requisições 
+@api.route('/search_email')#classe que atende requisições 
 class PersonEmailController(Resource):
-    @api.response(200, "Busca realizada com sucesso")
     def post(self):
         if request.is_json:
 
@@ -282,9 +274,8 @@ class PersonEmailController(Resource):
 
         return {"error": "Request must be JSON"}, 415
 
-@api.route('/nextActivity')#classe que atende requisições 
+@api.route('/search_next_activity')#classe que atende requisições 
 class PersonNextActivityController(Resource):
-    @api.response(200, "Busca realizada com sucesso")
     def post(self):
         if request.is_json:
 
