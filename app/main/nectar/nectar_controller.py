@@ -12,7 +12,6 @@ api_oportunidades = 'https://app.nectarcrm.com.br/crm/api/1/oportunidades/'
 api_qualificacoes = 'https://app.nectarcrm.com.br/crm/api/1/qualificacoes/'
 url_logo = "https://itsstecnologia.com.br/blogs/wp-content/uploads/2021/04/integracao-na-empresa.png"
 
-
 api_local= "https://5000-haislanmontanha-gev-55t1r8kq5qw.ws-us30.gitpod.io/"
 
 menu_cpf = "cpf"
@@ -47,73 +46,6 @@ def json_start():
             },
             "data": {}
         }
-
-def json_user():
-    return {
-            "id": 215123,
-            "text": "Hello world!",
-            "contact": {
-                "uid": "15295",
-                "type": "WHATSAPP",
-                "key": "+5514991670521",
-                "name": "Haislan",
-                "fields": {
-                "cpf": "38724981850",
-                "celular": "(11) 11111-1111"
-                }
-            },
-            "data": {
-                "user": {
-                "ativo": True,
-                "autor": {
-                    "id": 126466,
-                    "login": "haislan.nascimento@gmail.com",
-                    "nome": "Haislan Nascimento Costa Montanha"
-                },
-                "autorAtualizacao": {
-                    "id": 126466,
-                    "login": "haislan.nascimento@gmail.com",
-                    "nome": "Haislan Nascimento Costa Montanha"
-                },
-                "blocked": False,
-                "camposPersonalizados": {},
-                "camposPersonalizadosObject": {},
-                "compromissos": 0,
-                "constante": 1,
-                "contatos": [],
-                "contatosPai": [],
-                "cpf": "38724981850",
-                "dataAtualizacao": "2022-01-24T20:50:19.003Z",
-                "dataCriacao": "2022-01-21T18:57:04.260Z",
-                "email": "eloide@gmail.com",
-                "emailPrincipal": "eloide@gmail.com",
-                "emails": [
-                    "eloide@gmail.com"
-                ],
-                "empresa": False,
-                "empresasAtuais": [],
-                "enderecos": [],
-                "id": 32814773,
-                "integradoRD": False,
-                "isEmpresa": False,
-                "listas": [],
-                "nome": "Eloide Bispo Nascimento",
-                "oportunidades": 1,
-                "responsavel": {
-                    "id": 126466,
-                    "login": "haislan.nascimento@gmail.com",
-                    "nome": "Haislan Nascimento Costa Montanha"
-                },
-                "tarefas": 1,
-                "telefone": "+5514991670521",
-                "telefonePrincipal": "+5514991670521",
-                "telefones": [
-                    "+5514991670521"
-                ]
-                }
-            }
-        }
-
 
 def menu_inicial(msg):
     return {
@@ -247,7 +179,6 @@ def getUser(request_mz, msg_menu):
 
     if (request_mz.status_code == 200):
         print("The request was a success!")
-        # Code here will only run if the request is successful
         resposta_json = request_mz.json()
         json_size = len(resposta_json)
 
@@ -297,8 +228,6 @@ class NectarController(Resource):
 
         return {"error": "Request must be JSON"}, 415
 
-        # return PessoaDb.adicionar(request.json), 201
-
 @api.route('/cpf')#classe que atende requisições 
 class PessoaCpfController(Resource):
     @api.response(200, "Busca realizada com sucesso")
@@ -344,5 +273,81 @@ class PessoaTelefoneController(Resource):
             request_mz = requests.get(api_contact+'telefone/'+text, params=params, headers=headers)
 
             return getUser(request_mz, menu_telefone)
+
+        return {"error": "Request must be JSON"}, 415
+
+@api.route('/email')#classe que atende requisições 
+class PessoaEmailController(Resource):
+    @api.response(200, "Busca realizada com sucesso")
+    @api.expect(json_start())
+    def post(self):
+        if request.is_json:
+
+            mz = request.get_json()
+            text = mz["text"]
+
+            request_mz = requests.get(api_contact+'email/'+text, params=params, headers=headers)
+
+            return getUser(request_mz, menu_email)
+
+        return {"error": "Request must be JSON"}, 415
+
+@api.route('/proximaAtividade')#classe que atende requisições 
+class PessoaTelefoneController(Resource):
+    @api.response(200, "Busca realizada com sucesso")
+    @api.expect(json_start())
+    def post(self):
+        if request.is_json:
+
+            mz = request.get_json()
+            text = mz["text"]
+            data = mz["data"]
+            data_size = len(data)
+
+            print(f"Content: {data} Size: {data_size}")
+
+            if data_size==0:
+                return menu_inicial("Olá, não foi possivel encontrar nenhuma atividade, por favor informe uma das seguintes informações.")
+            elif data["user"]["id"]:
+
+                user_id = data["user"]["id"]
+                user_cpf = data["user"]["cpf"]
+
+                print(f"User id: {user_id} User CPF: {user_cpf}")
+
+                request_mz = requests.get(api_contact+str(user_id)+'/proximaAtividade', params=params, headers=headers)
+
+                print(f"Status Code: {request_mz.status_code}, Url: {request_mz.url}")
+
+                if (request_mz.status_code == 200):
+                        print("The request was a success!")
+                        # Code here will only run if the request is successful
+                        resposta_json = request_mz.json()
+                        json_size = len(resposta_json)
+
+                        print(f"Status Code: {request_mz.status_code}, Content: {resposta_json}, Size Json {json_size}")
+
+                        if json_size == 0:
+                            return informacao_invalida(menu_proximaAtividade, util.getUrlLocal()+"nectarcrm_proximaAtividade"), 201
+                        else:
+                            titulo = resposta_json["titulo"]
+                            descricao = resposta_json["descricao"]
+                            responsavel = resposta_json["responsavel"]["nome"]
+                            cliente = resposta_json["cliente"]["nome"]
+                            tarefa = resposta_json["tarefaTipo"]["nome"]
+                            dataLimite = resposta_json["dataLimite"]
+                            dataCriacao = resposta_json["dataCriacao"]
+
+                            f = "%Y-%m-%dT%H:%M:%S.%fZ"
+                            dataLimite_f = datetime.strptime(dataLimite, f)
+
+                            dataCriacao_f = datetime.strptime(dataLimite, f)
+
+                            msg_information = f"Titulo: {titulo},\n Descrição: {descricao},\n Responsavel: {responsavel},\n Cliente: {cliente},\n Tarefa: {tarefa},\n Criada em: {dataCriacao_f},\n Limite de entrega: {dataLimite_f}"
+
+                            return response_information(msg_information, ""), 201
+                                
+                elif (request_mz.status_code == 404):
+                    return {"error": "Request must be JSON"}, 404
 
         return {"error": "Request must be JSON"}, 415
