@@ -143,7 +143,7 @@ def response_information(text, urldoc):
         ]
     }
 
-def informacao_invalida(msg_menu):
+def invalid_information(msg_menu):
     if msg_menu == menu_cpf:
         return response_question("O "+msg_menu+" é inválido. Por favor informe um "+msg_menu+" válido.", api_local+"hubspot_cpf")
     elif msg_menu == menu_cnpj:
@@ -168,7 +168,7 @@ def getUser(request_mz, msg_menu):
         msg_erro_menu = "Olá, não encontramos seu contato pelo "+msg_menu+". Informe uma das seguintes opções: "
 
         if json_size == 0:
-            return informacao_invalida(msg_menu), 201
+            return invalid_information(msg_menu), 201
         else:
 
             s1 = json.dumps(resposta_json)
@@ -182,7 +182,7 @@ def getUser(request_mz, msg_menu):
 
                 return menu_user(user_json, msg), 201
             else:
-                return informacao_invalida(msg_menu), 201
+                return invalid_information(msg_menu), 201
                 
     elif (request_mz.status_code == 404):
         return {"error": "Request must be JSON"}, 404
@@ -302,7 +302,7 @@ def getproximaAtividade_hubspot():
                     print(f"Status Code: {request_mz.status_code}, Content: {resposta_json}, Size Json {json_size}")
 
                     if json_size == 0:
-                        return informacao_invalida(menu_proximaAtividade), 201
+                        return invalid_information(menu_proximaAtividade), 201
                     else:
                         titulo = resposta_json["titulo"]
                         descricao = resposta_json["descricao"]

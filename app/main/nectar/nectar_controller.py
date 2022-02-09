@@ -8,20 +8,16 @@ from datetime import datetime
 api = Namespace('Nectar',description='Integração Nectar CRM')
 
 api_contact = 'https://app.nectarcrm.com.br/crm/api/1/contatos/'
-api_oportunidades = 'https://app.nectarcrm.com.br/crm/api/1/oportunidades/'
-api_qualificacoes = 'https://app.nectarcrm.com.br/crm/api/1/qualificacoes/'
 url_logo = "https://itsstecnologia.com.br/blogs/wp-content/uploads/2021/04/integracao-na-empresa.png"
 
 api_local= "https://5000-haislanmontanha-gev-55t1r8kq5qw.ws-us30.gitpod.io/"
 
 menu_cpf = "cpf"
 menu_cnpj = "cnpj"
-menu_telefone = "telefone"
+menu_phone = "telefone"
 menu_email = "email"
 menu_statistics = "statistics"
-menu_proximaAtividade = "proximaAtividade"
-menu_qualificacao = "qualificacao"
-menu_oportunidade = "oportunidade"
+menu_next_activity = "proximaAtividade"
 
 headers = {
     'Accept': 'application/json', 
@@ -47,7 +43,7 @@ def json_start():
             "data": {}
         }
 
-def menu_inicial(msg):
+def home_menu(msg):
     return {
         "type":"MENU",
         "text": msg,
@@ -163,17 +159,17 @@ def response_information(text, urldoc):
         ]
     }
 
-def informacao_invalida(msg_menu, url_callback):
+def invalid_information(msg_menu, url_callback):
     if msg_menu == menu_cpf:
         return response_question("O "+msg_menu+" é inválido. Por favor informe um "+msg_menu+" válido.", url_callback)
     elif msg_menu == menu_cnpj:
         return response_question("O "+msg_menu+" é inválido. Por favor informe um "+msg_menu+" válido.", url_callback )
-    elif msg_menu == menu_telefone:
+    elif msg_menu == menu_phone:
         return response_question("O "+msg_menu+" é inválido. Por favor informe um "+msg_menu+" válido.", url_callback)
     elif msg_menu == menu_email:
         return response_question("O "+msg_menu+" é inválido. Por favor informe um "+msg_menu+" válido.", url_callback )
     else:
-        return menu_inicial("Olá, por favor informe uma das seguintes informações.")
+        return home_menu("Olá, por favor informe uma das seguintes informações.")
 
 def getUser(request_mz, msg_menu):
 
@@ -187,7 +183,7 @@ def getUser(request_mz, msg_menu):
         msg_erro_menu = "Olá, não encontramos seu contato pelo "+msg_menu+". Informe uma das seguintes opções: "
 
         if json_size == 0:
-            return informacao_invalida(msg_menu, ""), 201
+            return invalid_information(msg_menu, ""), 201
         else:
 
             s1 = json.dumps(resposta_json)
@@ -203,19 +199,17 @@ def getUser(request_mz, msg_menu):
 
                 return menu_user(user_json, msg), 201
             else:
-                return informacao_invalida(msg_menu,""), 201
+                return invalid_information(msg_menu,""), 201
                 
     elif (request_mz.status_code == 404):
         return {"error": "Request must be JSON"}, 404
 
 @api.route('/')
 class NectarController(Resource):
-
-    @api.response(200, "Busca realizada com sucesso") #documentação para tipo de respostas
     
     def get(self):
          return "Hello World!", 200
-    @api.expect(json_start())
+
     def post(self):
 
         if request.is_json:
@@ -224,14 +218,13 @@ class NectarController(Resource):
 
             request_mz = requests.get(api_contact+'telefone/'+telefone, params=params, headers=headers) 
             
-            return getUser(request_mz, "menu_inicial")
+            return getUser(request_mz, "home_menu")
 
         return {"error": "Request must be JSON"}, 415
 
 @api.route('/cpf')#classe que atende requisições 
-class PessoaCpfController(Resource):
+class PersonCpfController(Resource):
     @api.response(200, "Busca realizada com sucesso")
-    @api.expect(json_start())
     def post(self):
         if request.is_json:
 
@@ -245,9 +238,8 @@ class PessoaCpfController(Resource):
         return {"error": "Request must be JSON"}, 415
 
 @api.route('/cnpj')#classe que atende requisições 
-class PessoaCnpjController(Resource):
+class PersonCnpjController(Resource):
     @api.response(200, "Busca realizada com sucesso")
-    @api.expect(json_start())
     def post(self):
         if request.is_json:
 
@@ -261,9 +253,8 @@ class PessoaCnpjController(Resource):
         return {"error": "Request must be JSON"}, 415
 
 @api.route('/telefone')#classe que atende requisições 
-class PessoaTelefoneController(Resource):
+class PersonPhoneController(Resource):
     @api.response(200, "Busca realizada com sucesso")
-    @api.expect(json_start())
     def post(self):
         if request.is_json:
 
@@ -272,14 +263,13 @@ class PessoaTelefoneController(Resource):
 
             request_mz = requests.get(api_contact+'telefone/'+text, params=params, headers=headers)
 
-            return getUser(request_mz, menu_telefone)
+            return getUser(request_mz, menu_phone)
 
         return {"error": "Request must be JSON"}, 415
 
 @api.route('/email')#classe que atende requisições 
-class PessoaEmailController(Resource):
+class PersonEmailController(Resource):
     @api.response(200, "Busca realizada com sucesso")
-    @api.expect(json_start())
     def post(self):
         if request.is_json:
 
@@ -292,10 +282,9 @@ class PessoaEmailController(Resource):
 
         return {"error": "Request must be JSON"}, 415
 
-@api.route('/proximaAtividade')#classe que atende requisições 
-class PessoaTelefoneController(Resource):
+@api.route('/nextActivity')#classe que atende requisições 
+class PersonNextActivityController(Resource):
     @api.response(200, "Busca realizada com sucesso")
-    @api.expect(json_start())
     def post(self):
         if request.is_json:
 
@@ -307,7 +296,7 @@ class PessoaTelefoneController(Resource):
             print(f"Content: {data} Size: {data_size}")
 
             if data_size==0:
-                return menu_inicial("Olá, não foi possivel encontrar nenhuma atividade, por favor informe uma das seguintes informações.")
+                return home_menu("Olá, não foi possivel encontrar nenhuma atividade, por favor informe uma das seguintes informações.")
             elif data["user"]["id"]:
 
                 user_id = data["user"]["id"]
@@ -328,7 +317,7 @@ class PessoaTelefoneController(Resource):
                         print(f"Status Code: {request_mz.status_code}, Content: {resposta_json}, Size Json {json_size}")
 
                         if json_size == 0:
-                            return informacao_invalida(menu_proximaAtividade, util.getUrlLocal()+"nectarcrm_proximaAtividade"), 201
+                            return invalid_information(menu_next_activity, util.getUrlLocal()+"nectarcrm_proximaAtividade"), 201
                         else:
                             titulo = resposta_json["titulo"]
                             descricao = resposta_json["descricao"]
