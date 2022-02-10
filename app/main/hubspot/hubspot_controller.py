@@ -11,7 +11,7 @@ app = Flask(__name__)
 
 api_contact = 'https://api.hubapi.com/crm/v3/objects/contacts/'
 
-api_local= "https://5000-haislanmontanha-gev-55t1r8kq5qw.ws-us30.gitpod.io/"
+api_local= "https://5500-haislanmontanha-gev-55t1r8kq5qw.ws-us30.gitpod.io/api/hubspot/"
 
 menu_cpf = "cpf"
 menu_cnpj = "cnpj"
@@ -97,7 +97,7 @@ def menu_user(user_json, msg):
                 "number":1,
                 "text":"Próxima tarefa",
                 "callback":{
-                    "endpoint": api_local+"hubspot_proximaAtividade",
+                    "endpoint": api_local+"search_next_activity",
                     "data":{
                         "user": user_json
                     }
@@ -177,9 +177,13 @@ def getUser(request_mz, msg_menu):
             
             if 'results' in user:
 
-                user_json = resposta_json[1]["results"]['properties']['firstname']
+                print(resposta_json['results'])
+                print(resposta_json['results'][0]['properties'])
+                print(resposta_json['results'][0]['properties']['firstname'])
+
+                user_json = resposta_json['results'][0]['properties']
             
-                msg = "Olá "+user_json['nome']+", informe qual opção deseja consultar"
+                msg = "Olá "+user_json['firstname']+" "+user_json['lastname']+", informe qual opção deseja consultar"
 
                 return menu_user(user_json, msg), 201
             else:
