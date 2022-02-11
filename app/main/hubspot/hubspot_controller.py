@@ -45,7 +45,7 @@ def home_menu(msg):
                 "number": 1,
                 "text": "CPF",
                 "callback": {
-                    "endpoint": get_url + "/search_cpf",
+                    "endpoint": get_url() + "/search_cpf",
                     "data": {},
                 },
             },
@@ -53,7 +53,7 @@ def home_menu(msg):
                 "number": 2,
                 "text": "CNPJ",
                 "callback": {
-                    "endpoint": get_url + "/search_cnpj",
+                    "endpoint": get_url() + "/search_cnpj",
                     "data": {},
                 },
             },
@@ -61,7 +61,7 @@ def home_menu(msg):
                 "number": 3,
                 "text": "Telefone",
                 "callback": {
-                    "endpoint": get_url + "/search_phone",
+                    "endpoint": get_url() + "/search_phone",
                     "data": {},
                 },
             },
@@ -69,7 +69,7 @@ def home_menu(msg):
                 "number": 4,
                 "text": "Email",
                 "callback": {
-                    "endpoint": get_url + "/search_email",
+                    "endpoint": get_url() + "/search_email",
                     "data": {},
                 },
             },
@@ -94,7 +94,7 @@ def menu_user(user_json, msg):
                 "number": 1,
                 "text": "Próxima tarefa",
                 "callback": {
-                    "endpoint": get_url + "/search_next_activity",
+                    "endpoint": get_url() + "/search_next_activity",
                     "data": {"user": user_json},
                 },
             }
