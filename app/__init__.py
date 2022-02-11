@@ -17,7 +17,7 @@ api = Api(
     prefix="/api",
 )
 
-# adicionado namespace nectar_crm para rotas
+# adicionado namespaces para rotas
 api.add_namespace(nectar_controller, path="/nectar")
 api.add_namespace(hubspot_controller, path="/hubspot")
 api.add_namespace(rdstation_controller, path="/rdstation")
