@@ -12,24 +12,23 @@ util = Utils()
 
 api_contact = "https://api.hubapi.com/crm/v3/objects/contacts/"
 
-menu_cpf = "cpf"
-menu_cnpj = "cnpj"
-menu_phone = "telefone"
-menu_email = "email"
-
 api_key = "1558c7be-9e9c-40f2-931a-a72be68a200f"
-headers = {
-    "Accept": "application/json",
-    "Access-Token": "1558c7be-9e9c-40f2-931a-a72be68a200f",
-    "User-Agent": "request",
-}
 
 headers_post = {"Content-Type": "application/json"}
 
-params = {"api_token": "1558c7be-9e9c-40f2-931a-a72be68a200f"}
+params = {"api_token": api_key}
+
+MENU_CPF = "cpf"
+MENU_CNPJ = "cnpj"
+MENU_PHONE = "telefone"
+MENU_EMAIL = "email"
 
 
-def menu_inicial(msg):
+def get_url():
+    return util.get_url() + "nectar/"
+
+
+def home_menu(msg):
     return {
         "type": "MENU",
         "text": msg,
@@ -46,7 +45,7 @@ def menu_inicial(msg):
                 "number": 1,
                 "text": "CPF",
                 "callback": {
-                    "endpoint": util.get_url() + "hubspot/search_cpf",
+                    "endpoint": get_url + "/search_cpf",
                     "data": {},
                 },
             },
@@ -54,7 +53,7 @@ def menu_inicial(msg):
                 "number": 2,
                 "text": "CNPJ",
                 "callback": {
-                    "endpoint": util.get_url() + "hubspot/search_cnpj",
+                    "endpoint": get_url + "/search_cnpj",
                     "data": {},
                 },
             },
@@ -62,7 +61,7 @@ def menu_inicial(msg):
                 "number": 3,
                 "text": "Telefone",
                 "callback": {
-                    "endpoint": util.get_url() + "hubspot/search_phone",
+                    "endpoint": get_url + "/search_phone",
                     "data": {},
                 },
             },
@@ -70,7 +69,7 @@ def menu_inicial(msg):
                 "number": 4,
                 "text": "Email",
                 "callback": {
-                    "endpoint": util.get_url() + "hubspot/search_email",
+                    "endpoint": get_url + "/search_email",
                     "data": {},
                 },
             },
@@ -95,7 +94,7 @@ def menu_user(user_json, msg):
                 "number": 1,
                 "text": "Próxima tarefa",
                 "callback": {
-                    "endpoint": util.get_url() + "hubspot/search_next_activity",
+                    "endpoint": get_url + "/search_next_activity",
                     "data": {"user": user_json},
                 },
             }
@@ -119,7 +118,7 @@ def response_question(text, callback):
     }
 
 
-def response_information(text, urldoc):
+def response_information(text, url_document):
     return {
         "type": "INFORMATION",
         "text": text,
@@ -134,41 +133,41 @@ def response_information(text, urldoc):
                 "position": "AFTER",
                 "type": "DOCUMENT",
                 "name": "document.pdf",
-                "url": "http://www.africau.edu/images/default/sample.pdf",
+                "url": url_document,
             },
         ],
     }
 
 
 def invalid_information(msg_menu):
-    if msg_menu == menu_cpf:
+    if msg_menu == MENU_CPF:
         return response_question(
             "O "
             + msg_menu
             + " é inválido. Por favor informe um "
             + msg_menu
             + " válido.",
-            util.get_url() + "hubspot/search_cpf",
+            get_url + "/search_cpf",
         )
-    elif msg_menu == menu_cnpj:
+    elif msg_menu == MENU_CNPJ:
         return response_question(
             "O "
             + msg_menu
             + " é inválido. Por favor informe um "
             + msg_menu
             + " válido.",
-            util.get_url() + "hubspot/search_cnpj",
+            get_url + "/search_cnpj",
         )
-    elif msg_menu == menu_phone:
+    elif msg_menu == MENU_PHONE:
         return response_question(
             "O "
             + msg_menu
             + " é inválido. Por favor informe um "
             + msg_menu
             + " válido.",
-            util.get_url() + "hubspot/search_phone",
+            get_url + "/search_phone",
         )
-    elif msg_menu == menu_email:
+    elif msg_menu == MENU_EMAIL:
         return response_question(
             "O "
             + msg_menu
@@ -178,41 +177,35 @@ def invalid_information(msg_menu):
             util.get_url() + "hubspot/search_email",
         )
     else:
-        return menu_inicial("Olá, por favor informe uma das seguintes informações.")
+        return home_menu("Olá, por favor informe uma das seguintes informações.")
 
 
-def getUser(request_mz, msg_menu):
+def get_user(request_mz, msg_menu):
 
     if request_mz.status_code == 200:
         print("The request was a success!")
         # Code here will only run if the request is successful
-        resposta_json = request_mz.json()
-        json_size = len(resposta_json)
+        json_response = request_mz.json()
+        json_size = len(json_response)
 
         print(
-            f"Status Code: {request_mz.status_code}, Content: {resposta_json}, Size Json {json_size}"
-        )
-
-        msg_erro_menu = (
-            "Olá, não encontramos seu contato pelo "
-            + msg_menu
-            + ". Informe uma das seguintes opções: "
+            f"Status Code: {request_mz.status_code}, Content: {json_response}, Size Json {json_size}"
         )
 
         if json_size == 0:
             return invalid_information(msg_menu), 201
         else:
 
-            s1 = json.dumps(resposta_json)
+            s1 = json.dumps(json_response)
             user = json.loads(s1)
 
             if "results" in user:
 
-                print(resposta_json["results"])
-                print(resposta_json["results"][0]["properties"])
-                print(resposta_json["results"][0]["properties"]["firstname"])
+                print(json_response["results"])
+                print(json_response["results"][0]["properties"])
+                print(json_response["results"][0]["properties"]["firstname"])
 
-                user_json = resposta_json["results"][0]["properties"]
+                user_json = json_response["results"][0]["properties"]
 
                 msg = (
                     "Olá "
@@ -257,6 +250,6 @@ class HubSpotController(Resource):
                 headers=headers_post,
             )
 
-            return getUser(request_mz, "home_menu")
+            return get_user(request_mz, "home_menu")
 
         return {"error": "Request must be JSON"}, 415

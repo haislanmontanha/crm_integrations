@@ -13,21 +13,16 @@ util = Utils()
 api_contact = "https://app.nectarcrm.com.br/crm/api/1/contatos/"
 url_logo = "https://itsstecnologia.com.br/blogs/wp-content/uploads/2021/04/integracao-na-empresa.png"
 
+api_key = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2NDI3OTA4MDgsImV4cCI6MTY3NDMyMjM2OSwidXNlckxvZ2luIjoiaGFpc2xhbi5uYXNjaW1lbnRvQGdtYWlsLmNvbSIsInVzZXJJZCI6IjEyNjQ2NiIsInVzdWFyaW9NYXN0ZXJJZCI6IjEyNjQ2NSJ9.08lkZ8ou0mxda9Hq45J07elTRTpD-2MZYS6pYcMnOcw"
+
+
+params = {"api_token": api_key}
+
 menu_cpf = "cpf"
 menu_cnpj = "cnpj"
 menu_phone = "telefone"
 menu_email = "email"
 menu_next_activity = "next_activity"
-
-headers = {
-    "Accept": "application/json",
-    "Access-Token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2NDI3OTA4MDgsImV4cCI6MTY3NDMyMjM2OSwidXNlckxvZ2luIjoiaGFpc2xhbi5uYXNjaW1lbnRvQGdtYWlsLmNvbSIsInVzZXJJZCI6IjEyNjQ2NiIsInVzdWFyaW9NYXN0ZXJJZCI6IjEyNjQ2NSJ9.08lkZ8ou0mxda9Hq45J07elTRTpD-2MZYS6pYcMnOcw",
-    "User-Agent": "request",
-}
-
-params = {
-    "api_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2NDI3OTA4MDgsImV4cCI6MTY3NDMyMjM2OSwidXNlckxvZ2luIjoiaGFpc2xhbi5uYXNjaW1lbnRvQGdtYWlsLmNvbSIsInVzZXJJZCI6IjEyNjQ2NiIsInVzdWFyaW9NYXN0ZXJJZCI6IjEyNjQ2NSJ9.08lkZ8ou0mxda9Hq45J07elTRTpD-2MZYS6pYcMnOcw"
-}
 
 
 def json_start():
@@ -201,11 +196,11 @@ def getUser(request_mz, msg_menu):
 
     if request_mz.status_code == 200:
         print("The request was a success!")
-        resposta_json = request_mz.json()
-        json_size = len(resposta_json)
+        json_response = request_mz.json()
+        json_size = len(json_response)
 
         print(
-            f"Status Code: {request_mz.status_code}, Content: {resposta_json}, Size Json {json_size}"
+            f"Status Code: {request_mz.status_code}, Content: {json_response}, Size Json {json_size}"
         )
 
         msg_erro_menu = (
@@ -218,14 +213,16 @@ def getUser(request_mz, msg_menu):
             return invalid_information(msg_menu, ""), 201
         else:
 
-            s1 = json.dumps(resposta_json)
+            s1 = json.dumps(json_response)
             user = json.loads(s1)
 
             if "message" not in user:
 
-                userId = resposta_json[0]["id"]
+                userId = json_response[0]["id"]
                 request_user = requests.get(
-                    api_contact + str(userId), params=params, headers=headers
+                    api_contact + str(userId),
+                    params=params,
+                    headers=util.get_headers(api_key),
                 )
                 user_json = request_user.json()
 
@@ -247,10 +244,12 @@ class NectarController(Resource):
 
         if request.is_json:
             mz = request.get_json()
-            telefone = mz["contact"]["key"]
+            phone = mz["contact"]["key"]
 
             request_mz = requests.get(
-                api_contact + "telefone/" + telefone, params=params, headers=headers
+                api_contact + "telefone/" + phone,
+                params=params,
+                headers=util.get_headers(api_key),
             )
 
             return getUser(request_mz, "home_menu")
@@ -267,7 +266,9 @@ class PersonCpfController(Resource):
             text = mz["text"]
 
             request_mz = requests.get(
-                api_contact + "cpf/" + text, params=params, headers=headers
+                api_contact + "cpf/" + text,
+                params=params,
+                headers=util.get_headers(api_key),
             )
 
             return getUser(request_mz, menu_cpf)
@@ -284,7 +285,9 @@ class PersonCnpjController(Resource):
             text = mz["text"]
 
             request_mz = requests.get(
-                api_contact + "cnpj/" + text, params=params, headers=headers
+                api_contact + "cnpj/" + text,
+                params=params,
+                headers=util.get_headers(api_key),
             )
 
             return getUser(request_mz, menu_cnpj)
@@ -301,7 +304,9 @@ class PersonPhoneController(Resource):
             text = mz["text"]
 
             request_mz = requests.get(
-                api_contact + "telefone/" + text, params=params, headers=headers
+                api_contact + "telefone/" + text,
+                params=params,
+                headers=util.get_headers(api_key),
             )
 
             return getUser(request_mz, menu_phone)
@@ -318,7 +323,9 @@ class PersonEmailController(Resource):
             text = mz["text"]
 
             request_mz = requests.get(
-                api_contact + "email/" + text, params=params, headers=headers
+                api_contact + "email/" + text,
+                params=params,
+                headers=util.get_headers(api_key),
             )
 
             return getUser(request_mz, menu_email)
@@ -352,7 +359,7 @@ class PersonNextActivityController(Resource):
                 request_mz = requests.get(
                     api_contact + str(user_id) + "/proximaAtividade",
                     params=params,
-                    headers=headers,
+                    headers=util.get_headers(api_key),
                 )
 
                 print(f"Status Code: {request_mz.status_code}, Url: {request_mz.url}")
@@ -360,11 +367,11 @@ class PersonNextActivityController(Resource):
                 if request_mz.status_code == 200:
                     print("The request was a success!")
                     # Code here will only run if the request is successful
-                    resposta_json = request_mz.json()
-                    json_size = len(resposta_json)
+                    json_response = request_mz.json()
+                    json_size = len(json_response)
 
                     print(
-                        f"Status Code: {request_mz.status_code}, Content: {resposta_json}, Size Json {json_size}"
+                        f"Status Code: {request_mz.status_code}, Content: {json_response}, Size Json {json_size}"
                     )
 
                     if json_size == 0:
@@ -376,12 +383,12 @@ class PersonNextActivityController(Resource):
                             201,
                         )
                     else:
-                        titulo = resposta_json["titulo"]
-                        descricao = resposta_json["descricao"]
-                        responsavel = resposta_json["responsavel"]["nome"]
-                        cliente = resposta_json["cliente"]["nome"]
-                        tarefa = resposta_json["tarefaTipo"]["nome"]
-                        dataLimite = resposta_json["dataLimite"]
+                        titulo = json_response["titulo"]
+                        descricao = json_response["descricao"]
+                        responsavel = json_response["responsavel"]["nome"]
+                        cliente = json_response["cliente"]["nome"]
+                        tarefa = json_response["tarefaTipo"]["nome"]
+                        dataLimite = json_response["dataLimite"]
 
                         f = "%Y-%m-%dT%H:%M:%S.%fZ"
                         dataLimite_f = datetime.strptime(dataLimite, f)

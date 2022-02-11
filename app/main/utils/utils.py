@@ -15,3 +15,10 @@ class Utils(Resource):
             return "https://5000-haislanmontanha-gev-55t1r8kq5qw.ws-us30.gitpod.io/"
         else:
             return "http://localhost:5500/api/"
+
+    def get_headers(self, api_key):
+        return {
+            "Accept": "application/json",
+            "Access-Token": api_key,
+            "User-Agent": "request",
+        }
