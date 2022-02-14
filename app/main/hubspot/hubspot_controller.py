@@ -5,7 +5,7 @@ from flask import request
 from flask_restx import Resource, Namespace
 from app.main.utils.utils import Utils
 
-api = Namespace("client", description="Integração client CRM")
+api = Namespace("HubSpot", description="Integração client CRM")
 
 util = Utils()
 client = util.get_hubspot()

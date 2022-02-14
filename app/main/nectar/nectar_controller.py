@@ -7,7 +7,7 @@ from datetime import datetime
 
 from app.main.utils.utils import Utils
 
-api = Namespace("client", description="Integração client CRM")
+api = Namespace("Nectar", description="Integração client CRM")
 
 util = Utils()
 client = util.get_nectar()
