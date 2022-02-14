@@ -1,8 +1,6 @@
-import os
-import requests
-import json
-from flask import Flask, request, jsonify
-from flask_restx import Resource, Api, Namespace
+from flask_restx import Resource, Namespace
+from app.main.client.client import Client
+
 
 utils = Namespace("Utils", description="Classe de informações")
 
@@ -22,3 +20,24 @@ class Utils(Resource):
             "Access-Token": api_key,
             "User-Agent": "request",
         }
+
+    def get_nectar(self):
+        return Client(
+            "https://app.nectarcrm.com.br/crm/api/1/contatos/",
+            "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2NDI3OTA4MDgsImV4cCI6MTY3NDMyMjM2OSwidXNlckxvZ2luIjoiaGFpc2xhbi5uYXNjaW1lbnRvQGdtYWlsLmNvbSIsInVzZXJJZCI6IjEyNjQ2NiIsInVzdWFyaW9NYXN0ZXJJZCI6IjEyNjQ2NSJ9.08lkZ8ou0mxda9Hq45J07elTRTpD-2MZYS6pYcMnOcw",
+            "https://itsstecnologia.com.br/blogs/wp-content/uploads/2021/04/integracao-na-empresa.png",
+        )
+
+    def get_hubspot(self):
+        return Client(
+            "https://api.hubapi.com/crm/v3/objects/contacts/",
+            "1558c7be-9e9c-40f2-931a-a72be68a200f",
+            "https://itsstecnologia.com.br/blogs/wp-content/uploads/2021/04/integracao-na-empresa.png",
+        )
+
+    def get_rdstation(self):
+        return Client(
+            "https://api.rd.services/platform/contacts/",
+            "adf54a9d729dea6410155f75bf251198",
+            "https://itsstecnologia.com.br/blogs/wp-content/uploads/2021/04/integracao-na-empresa.png",
+        )

@@ -1,31 +1,26 @@
 import os
 import requests
 import json
-from flask import Flask, request, jsonify
-from flask_restx import Resource, Api, Namespace
+from flask import request
+from flask_restx import Resource, Namespace
 from app.main.utils.utils import Utils
 
-api = Namespace("HubSpot", description="Integração HubSpot CRM")
+api = Namespace("client", description="Integração client CRM")
 
-app = Flask(__name__)
 util = Utils()
-
-api_contact = "https://api.hubapi.com/crm/v3/objects/contacts/"
-
-api_key = "1558c7be-9e9c-40f2-931a-a72be68a200f"
+client = util.get_hubspot()
 
 headers_post = {"Content-Type": "application/json"}
+params = {"api_token": client.api_key}
 
-params = {"api_token": api_key}
-
-MENU_CPF = "cpf"
-MENU_CNPJ = "cnpj"
-MENU_PHONE = "telefone"
-MENU_EMAIL = "email"
+menu_cpf = "cpf"
+menu_cnpj = "cnpj"
+menu_phone = "telefone"
+menu_email = "email"
 
 
 def get_url():
-    return util.get_url() + "hubspot/"
+    return util.get_url() + "client/"
 
 
 def home_menu(msg):
@@ -37,7 +32,7 @@ def home_menu(msg):
                 "position": "BEFORE",
                 "type": "IMAGE",
                 "name": "image.png",
-                "url": "https://itsstecnologia.com.br/blogs/wp-content/uploads/2021/04/integracao-na-empresa.png",
+                "url": client.company_logo,
             }
         ],
         "items": [
@@ -86,7 +81,7 @@ def menu_user(user_json, msg):
                 "position": "BEFORE",
                 "type": "IMAGE",
                 "name": "image.png",
-                "url": "https://itsstecnologia.com.br/blogs/wp-content/uploads/2021/04/integracao-na-empresa.png",
+                "url": client.company_logo,
             }
         ],
         "items": [
@@ -111,7 +106,7 @@ def response_question(text, callback):
                 "position": "BEFORE",
                 "type": "IMAGE",
                 "name": "image.png",
-                "url": "https://itsstecnologia.com.br/blogs/wp-content/uploads/2021/04/integracao-na-empresa.png",
+                "url": client.company_logo,
             }
         ],
         "callback": {"endpoint": callback, "data": {}},
@@ -127,7 +122,7 @@ def response_information(text, url_document):
                 "position": "BEFORE",
                 "type": "IMAGE",
                 "name": "image.png",
-                "url": "https://itsstecnologia.com.br/blogs/wp-content/uploads/2021/04/integracao-na-empresa.png",
+                "url": client.company_logo,
             },
             {
                 "position": "AFTER",
@@ -140,7 +135,7 @@ def response_information(text, url_document):
 
 
 def invalid_information(msg_menu):
-    if msg_menu == MENU_CPF:
+    if msg_menu == menu_cpf:
         return response_question(
             "O "
             + msg_menu
@@ -149,7 +144,7 @@ def invalid_information(msg_menu):
             + " válido.",
             get_url + "search_cpf",
         )
-    elif msg_menu == MENU_CNPJ:
+    elif msg_menu == menu_cnpj:
         return response_question(
             "O "
             + msg_menu
@@ -158,7 +153,7 @@ def invalid_information(msg_menu):
             + " válido.",
             get_url + "search_cnpj",
         )
-    elif msg_menu == MENU_PHONE:
+    elif msg_menu == menu_phone:
         return response_question(
             "O "
             + msg_menu
@@ -167,7 +162,7 @@ def invalid_information(msg_menu):
             + " válido.",
             get_url + "search_phone",
         )
-    elif msg_menu == MENU_EMAIL:
+    elif msg_menu == menu_email:
         return response_question(
             "O "
             + msg_menu
@@ -224,7 +219,7 @@ def get_user(request_mz, msg_menu):
 
 
 @api.route("/")
-class HubSpotController(Resource):
+class clientController(Resource):
     def post(self):
         if request.is_json:
             mz = request.get_json()
@@ -245,7 +240,7 @@ class HubSpotController(Resource):
             }
 
             request_mz = requests.post(
-                api_contact + "search?hapikey=" + api_key,
+                client.api + "search?hapikey=" + client.api_key,
                 data=json.dumps(data),
                 headers=headers_post,
             )

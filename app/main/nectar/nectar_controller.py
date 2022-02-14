@@ -1,23 +1,18 @@
 import os
 import requests
 import json
-from flask import Flask, request, jsonify
-from flask_restx import Resource, Api, Namespace
+from flask import request
+from flask_restx import Resource, Namespace
 from datetime import datetime
+
 from app.main.utils.utils import Utils
 
-api = Namespace("Nectar", description="Integração Nectar CRM")
+api = Namespace("client", description="Integração client CRM")
 
 util = Utils()
+client = util.get_nectar()
 
-api_contact = "https://app.nectarcrm.com.br/crm/api/1/contatos/"
-url_logo = "https://itsstecnologia.com.br/blogs/wp-content/uploads/2021/04/integracao-na-empresa.png"
-
-api_key = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2NDI3OTA4MDgsImV4cCI6MTY3NDMyMjM2OSwidXNlckxvZ2luIjoiaGFpc2xhbi5uYXNjaW1lbnRvQGdtYWlsLmNvbSIsInVzZXJJZCI6IjEyNjQ2NiIsInVzdWFyaW9NYXN0ZXJJZCI6IjEyNjQ2NSJ9.08lkZ8ou0mxda9Hq45J07elTRTpD-2MZYS6pYcMnOcw"
-
-
-params = {"api_token": api_key}
-
+params = {"api_token": client.api_key}
 menu_cpf = "cpf"
 menu_cnpj = "cnpj"
 menu_phone = "telefone"
@@ -26,7 +21,7 @@ menu_next_activity = "next_activity"
 
 
 def get_url():
-    return util.get_url() + "nectar/"
+    return util.get_url() + "client/"
 
 
 def json_start():
@@ -53,7 +48,7 @@ def home_menu(msg):
                 "position": "BEFORE",
                 "type": "IMAGE",
                 "name": "image.png",
-                "url": url_logo,
+                "url": client.company_logo,
             }
         ],
         "items": [
@@ -102,7 +97,7 @@ def menu_user(user_json, msg):
                 "position": "BEFORE",
                 "type": "IMAGE",
                 "name": "image.png",
-                "url": url_logo,
+                "url": client.company_logo,
             }
         ],
         "items": [
@@ -127,7 +122,7 @@ def response_question(text, callback):
                 "position": "BEFORE",
                 "type": "IMAGE",
                 "name": "image.png",
-                "url": url_logo,
+                "url": client.company_logo,
             }
         ],
         "callback": {"endpoint": callback, "data": {}},
@@ -143,7 +138,7 @@ def response_information(text, urldoc):
                 "position": "BEFORE",
                 "type": "IMAGE",
                 "name": "image.png",
-                "url": url_logo,
+                "url": client.company_logo,
             },
             {
                 "position": "AFTER",
@@ -218,9 +213,9 @@ def getUser(request_mz, msg_menu):
 
                 user_id = json_response[0]["id"]
                 request_user = requests.get(
-                    api_contact + str(user_id),
+                    client.api + str(user_id),
                     params=params,
-                    headers=util.get_headers(api_key),
+                    headers=util.get_headers(client.api_key),
                 )
                 user_json = request_user.json()
 
@@ -237,7 +232,7 @@ def getUser(request_mz, msg_menu):
 
 
 @api.route("/")
-class NectarController(Resource):
+class clientController(Resource):
     def post(self):
 
         if request.is_json:
@@ -245,9 +240,9 @@ class NectarController(Resource):
             phone = mz["contact"]["key"]
 
             request_mz = requests.get(
-                api_contact + "telefone/" + phone,
+                client.api + "telefone/" + phone,
                 params=params,
-                headers=util.get_headers(api_key),
+                headers=util.get_headers(client.api_key),
             )
 
             return getUser(request_mz, "home_menu")
@@ -264,9 +259,9 @@ class PersonCpfController(Resource):
             text = mz["text"]
 
             request_mz = requests.get(
-                api_contact + "cpf/" + text,
+                client.api + "cpf/" + text,
                 params=params,
-                headers=util.get_headers(api_key),
+                headers=util.get_headers(client.api_key),
             )
 
             return getUser(request_mz, menu_cpf)
@@ -283,9 +278,9 @@ class PersonCnpjController(Resource):
             text = mz["text"]
 
             request_mz = requests.get(
-                api_contact + "cnpj/" + text,
+                client.api + "cnpj/" + text,
                 params=params,
-                headers=util.get_headers(api_key),
+                headers=util.get_headers(client.api_key),
             )
 
             return getUser(request_mz, menu_cnpj)
@@ -302,9 +297,9 @@ class PersonPhoneController(Resource):
             text = mz["text"]
 
             request_mz = requests.get(
-                api_contact + "telefone/" + text,
+                client.api + "telefone/" + text,
                 params=params,
-                headers=util.get_headers(api_key),
+                headers=util.get_headers(client.api_key),
             )
 
             return getUser(request_mz, menu_phone)
@@ -321,9 +316,9 @@ class PersonEmailController(Resource):
             text = mz["text"]
 
             request_mz = requests.get(
-                api_contact + "email/" + text,
+                client.api + "email/" + text,
                 params=params,
-                headers=util.get_headers(api_key),
+                headers=util.get_headers(client.api_key),
             )
 
             return getUser(request_mz, menu_email)
@@ -337,7 +332,6 @@ class PersonNextActivityController(Resource):
         if request.is_json:
 
             mz = request.get_json()
-            text = mz["text"]
             data = mz["data"]
             data_size = len(data)
 
@@ -355,9 +349,9 @@ class PersonNextActivityController(Resource):
                 print(f"User id: {user_id} User CPF: {user_cpf}")
 
                 request_mz = requests.get(
-                    api_contact + str(user_id) + "/proximaAtividade",
+                    client.api + str(user_id) + "/proximaAtividade",
                     params=params,
-                    headers=util.get_headers(api_key),
+                    headers=util.get_headers(client.api_key),
                 )
 
                 print(f"Status Code: {request_mz.status_code}, Url: {request_mz.url}")
@@ -375,7 +369,7 @@ class PersonNextActivityController(Resource):
                         return (
                             invalid_information(
                                 menu_next_activity,
-                                get_url() + "nectar/search_next_activity",
+                                get_url() + "client/search_next_activity",
                             ),
                             201,
                         )

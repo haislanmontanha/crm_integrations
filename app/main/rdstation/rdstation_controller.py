@@ -1,31 +1,26 @@
 import os
 import requests
-import json
-from flask import Flask, request, jsonify
-from flask_restx import Resource, Api, Namespace
-from datetime import datetime
+from flask import request
+from flask_restx import Resource, Namespace
 from app.main.utils.utils import Utils
 
 
 api = Namespace("RDStation", description="Integração RD Station CRM")
 
-app = Flask(__name__)
 util = Utils()
-
-api_contact = "https://api.rd.services/platform/contacts/"
-api_key = "adf54a9d729dea6410155f75bf251198"
+client = util.get_rdstation()
 
 headers_post = {"Content-Type": "application/json"}
-params = {"api_key": api_key}
+params = {"api_key": client.api_key}
 
-MENU_CPF = "cpf"
-MENU_CNPJ = "cnpj"
-MENU_PHONE = "telefone"
-MENU_EMAIL = "email"
+menu_cpf = "cpf"
+menu_cnpj = "cnpj"
+menu_phone = "telefone"
+menu_email = "email"
 
 
 def get_url():
-    return util.get_url() + "rdstation/"
+    return util.get_url() + "rdstation"
 
 
 def home_menu(msg):
@@ -37,7 +32,7 @@ def home_menu(msg):
                 "position": "BEFORE",
                 "type": "IMAGE",
                 "name": "image.png",
-                "url": "https://itsstecnologia.com.br/blogs/wp-content/uploads/2021/04/integracao-na-empresa.png",
+                "url": client.company_logo,
             }
         ],
         "items": [
@@ -86,7 +81,7 @@ def menu_user(user_json, msg):
                 "position": "BEFORE",
                 "type": "IMAGE",
                 "name": "image.png",
-                "url": "https://itsstecnologia.com.br/blogs/wp-content/uploads/2021/04/integracao-na-empresa.png",
+                "url": client.company_logo,
             }
         ],
         "items": [
@@ -111,7 +106,7 @@ def response_question(text, callback):
                 "position": "BEFORE",
                 "type": "IMAGE",
                 "name": "image.png",
-                "url": "https://itsstecnologia.com.br/blogs/wp-content/uploads/2021/04/integracao-na-empresa.png",
+                "url": client.company_logo,
             }
         ],
         "callback": {"endpoint": callback, "data": {}},
@@ -127,7 +122,7 @@ def response_information(text, url_document):
                 "position": "BEFORE",
                 "type": "IMAGE",
                 "name": "image.png",
-                "url": "https://itsstecnologia.com.br/blogs/wp-content/uploads/2021/04/integracao-na-empresa.png",
+                "url": client.company_logo,
             },
             {
                 "position": "AFTER",
@@ -140,7 +135,7 @@ def response_information(text, url_document):
 
 
 def invalid_information(msg_menu):
-    if msg_menu == MENU_CPF:
+    if msg_menu == menu_cpf:
         return response_question(
             "O "
             + msg_menu
@@ -149,7 +144,7 @@ def invalid_information(msg_menu):
             + " válido.",
             get_url + "/search_cpf",
         )
-    elif msg_menu == MENU_CNPJ:
+    elif msg_menu == menu_cnpj:
         return response_question(
             "O "
             + msg_menu
@@ -158,7 +153,7 @@ def invalid_information(msg_menu):
             + " válido.",
             get_url + "/search_cnpj",
         )
-    elif msg_menu == MENU_PHONE:
+    elif msg_menu == menu_phone:
         return response_question(
             "O "
             + msg_menu
@@ -167,7 +162,7 @@ def invalid_information(msg_menu):
             + " válido.",
             get_url + "/search_phone",
         )
-    elif msg_menu == MENU_EMAIL:
+    elif msg_menu == menu_email:
         return response_question(
             "O "
             + msg_menu
@@ -185,7 +180,6 @@ def get_user(request_mz, msg_menu):
 
     if request_mz.status_code == 200:
         print("The request was a success!")
-        # Code here will only run if the request is successful
         json_response = request_mz.json()
         json_size = len(json_response)
 
@@ -196,28 +190,6 @@ def get_user(request_mz, msg_menu):
         if json_size == 0:
             return invalid_information(msg_menu), 201
         else:
-
-            s1 = json.dumps(json_response)
-            # user = json.loads(s1)
-
-            # if "results" in user:
-            #
-            #     print(json_response["results"])
-            #     print(json_response["results"][0]["properties"])
-            #     print(json_response["results"][0]["properties"]["firstname"])
-            #
-            #     user_json = json_response["results"][0]["properties"]
-            #
-            #     msg = (
-            #         "Olá "
-            #         + user_json["firstname"]
-            #         + " "
-            #         + user_json["lastname"]
-            #         + ", informe qual opção deseja consultar"
-            #     )
-            #
-            #     return menu_user(user_json, msg), 201
-            # else:
             return invalid_information(msg_menu), 201
 
     elif request_mz.status_code == 404:
@@ -234,9 +206,9 @@ class RdStationController(Resource):
             email = mz["text"]
 
             request_mz = requests.get(
-                api_contact + "email:" + email,
+                client.api + "email:" + email,
                 params=params,
-                headers=util.get_headers(api_key),
+                headers=util.get_headers(client.api_key),
             )
 
             return get_user(request_mz, "home_menu")
