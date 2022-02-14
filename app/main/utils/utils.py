@@ -6,7 +6,7 @@ from flask_restx import Resource, Api, Namespace
 
 utils = Namespace("Utils", description="Classe de informações")
 
-PRODUCTION = False
+PRODUCTION = True
 
 
 class Utils(Resource):
