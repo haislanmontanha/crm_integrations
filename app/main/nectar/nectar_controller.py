@@ -255,7 +255,7 @@ class NectarController(Resource):
         return {"error": "Request must be JSON"}, 415
 
 
-@api.route("/search_cpf")  # classe que atende requisições
+@api.route("/search_cpf")
 class PersonCpfController(Resource):
     def post(self):
         if request.is_json:
@@ -274,7 +274,7 @@ class PersonCpfController(Resource):
         return {"error": "Request must be JSON"}, 415
 
 
-@api.route("/search_cnpj")  # classe que atende requisições
+@api.route("/search_cnpj")
 class PersonCnpjController(Resource):
     def post(self):
         if request.is_json:
@@ -293,7 +293,7 @@ class PersonCnpjController(Resource):
         return {"error": "Request must be JSON"}, 415
 
 
-@api.route("/search_phone")  # classe que atende requisições
+@api.route("/search_phone")
 class PersonPhoneController(Resource):
     def post(self):
         if request.is_json:
@@ -312,7 +312,7 @@ class PersonPhoneController(Resource):
         return {"error": "Request must be JSON"}, 415
 
 
-@api.route("/search_email")  # classe que atende requisições
+@api.route("/search_email")
 class PersonEmailController(Resource):
     def post(self):
         if request.is_json:
@@ -331,7 +331,7 @@ class PersonEmailController(Resource):
         return {"error": "Request must be JSON"}, 415
 
 
-@api.route("/search_next_activity")  # classe que atende requisições
+@api.route("/search_next_activity")
 class PersonNextActivityController(Resource):
     def post(self):
         if request.is_json:
@@ -364,7 +364,6 @@ class PersonNextActivityController(Resource):
 
                 if request_mz.status_code == 200:
                     print("The request was a success!")
-                    # Code here will only run if the request is successful
                     json_response = request_mz.json()
                     json_size = len(json_response)
 

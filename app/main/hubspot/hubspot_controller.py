@@ -184,7 +184,7 @@ def get_user(request_mz, msg_menu):
 
     if request_mz.status_code == 200:
         print("The request was a success!")
-        # Code here will only run if the request is successful
+
         json_response = request_mz.json()
         json_size = len(json_response)
 
