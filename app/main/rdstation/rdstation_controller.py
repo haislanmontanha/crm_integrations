@@ -16,7 +16,7 @@ api_contact = "https://api.rd.services/platform/contacts/"
 api_key = "adf54a9d729dea6410155f75bf251198"
 
 headers_post = {"Content-Type": "application/json"}
-params = {"refresh_token": api_key}
+params = {"api_key": api_key}
 
 MENU_CPF = "cpf"
 MENU_CNPJ = "cnpj"

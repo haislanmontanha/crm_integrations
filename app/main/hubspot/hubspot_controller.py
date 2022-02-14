@@ -25,7 +25,7 @@ MENU_EMAIL = "email"
 
 
 def get_url():
-    return util.get_url() + "nectar/"
+    return util.get_url() + "hubspot/"
 
 
 def home_menu(msg):
@@ -45,7 +45,7 @@ def home_menu(msg):
                 "number": 1,
                 "text": "CPF",
                 "callback": {
-                    "endpoint": get_url() + "/search_cpf",
+                    "endpoint": get_url() + "search_cpf",
                     "data": {},
                 },
             },
@@ -53,7 +53,7 @@ def home_menu(msg):
                 "number": 2,
                 "text": "CNPJ",
                 "callback": {
-                    "endpoint": get_url() + "/search_cnpj",
+                    "endpoint": get_url() + "search_cnpj",
                     "data": {},
                 },
             },
@@ -61,7 +61,7 @@ def home_menu(msg):
                 "number": 3,
                 "text": "Telefone",
                 "callback": {
-                    "endpoint": get_url() + "/search_phone",
+                    "endpoint": get_url() + "search_phone",
                     "data": {},
                 },
             },
@@ -69,7 +69,7 @@ def home_menu(msg):
                 "number": 4,
                 "text": "Email",
                 "callback": {
-                    "endpoint": get_url() + "/search_email",
+                    "endpoint": get_url() + "search_email",
                     "data": {},
                 },
             },
@@ -94,7 +94,7 @@ def menu_user(user_json, msg):
                 "number": 1,
                 "text": "Próxima tarefa",
                 "callback": {
-                    "endpoint": get_url() + "/search_next_activity",
+                    "endpoint": get_url() + "search_next_activity",
                     "data": {"user": user_json},
                 },
             }
@@ -147,7 +147,7 @@ def invalid_information(msg_menu):
             + " é inválido. Por favor informe um "
             + msg_menu
             + " válido.",
-            get_url + "/search_cpf",
+            get_url + "search_cpf",
         )
     elif msg_menu == MENU_CNPJ:
         return response_question(
@@ -156,7 +156,7 @@ def invalid_information(msg_menu):
             + " é inválido. Por favor informe um "
             + msg_menu
             + " válido.",
-            get_url + "/search_cnpj",
+            get_url + "search_cnpj",
         )
     elif msg_menu == MENU_PHONE:
         return response_question(
@@ -165,7 +165,7 @@ def invalid_information(msg_menu):
             + " é inválido. Por favor informe um "
             + msg_menu
             + " válido.",
-            get_url + "/search_phone",
+            get_url + "search_phone",
         )
     elif msg_menu == MENU_EMAIL:
         return response_question(
@@ -174,7 +174,7 @@ def invalid_information(msg_menu):
             + " é inválido. Por favor informe um "
             + msg_menu
             + " válido.",
-            util.get_url() + "hubspot/search_email",
+            util.get_url() + "search_email",
         )
     else:
         return home_menu("Olá, por favor informe uma das seguintes informações.")

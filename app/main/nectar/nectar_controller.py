@@ -25,6 +25,10 @@ menu_email = "email"
 menu_next_activity = "next_activity"
 
 
+def get_url():
+    return util.get_url() + "nectar/"
+
+
 def json_start():
     return {
         "id": 215123,
@@ -57,7 +61,7 @@ def home_menu(msg):
                 "number": 1,
                 "text": "CPF",
                 "callback": {
-                    "endpoint": util.get_url() + "nectar/search_cpf",
+                    "endpoint": get_url() + "search_cpf",
                     "data": {},
                 },
             },
@@ -65,7 +69,7 @@ def home_menu(msg):
                 "number": 2,
                 "text": "CNPJ",
                 "callback": {
-                    "endpoint": util.get_url() + "nectar/search_cnpj",
+                    "endpoint": get_url() + "search_cnpj",
                     "data": {},
                 },
             },
@@ -73,7 +77,7 @@ def home_menu(msg):
                 "number": 3,
                 "text": "Telefone",
                 "callback": {
-                    "endpoint": util.get_url() + "nectar/search_phone",
+                    "endpoint": get_url() + "search_phone",
                     "data": {},
                 },
             },
@@ -81,7 +85,7 @@ def home_menu(msg):
                 "number": 4,
                 "text": "Email",
                 "callback": {
-                    "endpoint": util.get_url() + "nectar/search_email",
+                    "endpoint": get_url() + "search_email",
                     "data": {},
                 },
             },
@@ -106,7 +110,7 @@ def menu_user(user_json, msg):
                 "number": 1,
                 "text": "Próxima tarefa",
                 "callback": {
-                    "endpoint": util.get_url() + "nectar/search_next_activity",
+                    "endpoint": get_url() + "search_next_activity",
                     "data": {"user": user_json},
                 },
             }
@@ -203,12 +207,6 @@ def getUser(request_mz, msg_menu):
             f"Status Code: {request_mz.status_code}, Content: {json_response}, Size Json {json_size}"
         )
 
-        msg_erro_menu = (
-            "Olá, não encontramos seu contato pelo "
-            + msg_menu
-            + ". Informe uma das seguintes opções: "
-        )
-
         if json_size == 0:
             return invalid_information(msg_menu, ""), 201
         else:
@@ -218,9 +216,9 @@ def getUser(request_mz, msg_menu):
 
             if "message" not in user:
 
-                userId = json_response[0]["id"]
+                user_id = json_response[0]["id"]
                 request_user = requests.get(
-                    api_contact + str(userId),
+                    api_contact + str(user_id),
                     params=params,
                     headers=util.get_headers(api_key),
                 )
@@ -378,24 +376,32 @@ class PersonNextActivityController(Resource):
                         return (
                             invalid_information(
                                 menu_next_activity,
-                                util.get_url() + "nectar/search_next_activity",
+                                get_url() + "nectar/search_next_activity",
                             ),
                             201,
                         )
                     else:
-                        titulo = json_response["titulo"]
-                        descricao = json_response["descricao"]
-                        responsavel = json_response["responsavel"]["nome"]
-                        cliente = json_response["cliente"]["nome"]
-                        tarefa = json_response["tarefaTipo"]["nome"]
-                        dataLimite = json_response["dataLimite"]
+                        title = json_response["titulo"]
+                        description = json_response["descricao"]
+                        responsible = json_response["responsavel"]["nome"]
+                        client = json_response["cliente"]["nome"]
+                        task = json_response["tarefaTipo"]["nome"]
+                        data_limit = json_response["dataLimite"]
 
                         f = "%Y-%m-%dT%H:%M:%S.%fZ"
-                        dataLimite_f = datetime.strptime(dataLimite, f)
+                        data_limit_f = datetime.strptime(data_limit, f)
 
-                        dataCriacao_f = datetime.strptime(dataLimite, f)
+                        data_create_f = datetime.strptime(data_limit, f)
 
-                        msg_information = f"Titulo: {titulo},\n Descrição: {descricao},\n Responsavel: {responsavel},\n Cliente: {cliente},\n Tarefa: {tarefa},\n Criada em: {dataCriacao_f},\n Limite de entrega: {dataLimite_f}"
+                        msg_information = (
+                            f"Titulo: {title},"
+                            f"\n Descrição: {description},"
+                            f"\n Responsavel: {responsible},"
+                            f"\n Cliente: {client},"
+                            f"\n Tarefa: {task},"
+                            f"\n Criada em: {data_create_f},"
+                            f"\n Limite de entrega: {data_limit_f}"
+                        )
 
                         return response_information(msg_information, ""), 201
 
