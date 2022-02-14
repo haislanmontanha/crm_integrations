@@ -4,7 +4,7 @@ from app.main.client.client import Client
 
 utils = Namespace("Utils", description="Classe de informações")
 
-PRODUCTION = False
+PRODUCTION = True
 
 
 class Utils(Resource):
