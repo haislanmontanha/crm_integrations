@@ -4,7 +4,6 @@ from os import environ
 if __name__ == "__main__":
     #SERVER_HOST = environ.get("SERVER_HOST", "localhost")
     port = int(os.environ.get("PORT", 5500))
-    app.run(host='0.0.0.0', port=port)
     app.run(
         host='0.0.0.0',
         port=port,
