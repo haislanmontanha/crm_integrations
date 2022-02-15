@@ -219,7 +219,7 @@ def get_user(request_mz, msg_menu):
 
 
 @api.route("/")
-class clientController(Resource):
+class HubSpotController(Resource):
     def post(self):
         if request.is_json:
             mz = request.get_json()

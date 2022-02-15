@@ -232,7 +232,7 @@ def getUser(request_mz, msg_menu):
 
 
 @api.route("/")
-class clientController(Resource):
+class NectarController(Resource):
     def post(self):
 
         if request.is_json:
@@ -377,7 +377,7 @@ class PersonNextActivityController(Resource):
                         title = json_response["titulo"]
                         description = json_response["descricao"]
                         responsible = json_response["responsavel"]["nome"]
-                        client = json_response["cliente"]["nome"]
+                        client_name = json_response["cliente"]["nome"]
                         task = json_response["tarefaTipo"]["nome"]
                         data_limit = json_response["dataLimite"]
 
@@ -390,7 +390,7 @@ class PersonNextActivityController(Resource):
                             f"Titulo: {title},"
                             f"\n Descrição: {description},"
                             f"\n Responsavel: {responsible},"
-                            f"\n Cliente: {client},"
+                            f"\n Cliente: {client_name},"
                             f"\n Tarefa: {task},"
                             f"\n Criada em: {data_create_f},"
                             f"\n Limite de entrega: {data_limit_f}"
