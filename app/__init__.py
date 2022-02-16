@@ -1,11 +1,13 @@
 from flask import Flask, Blueprint, request, redirect
 from flask_restx import Api
+from flask_cors import CORS
 
 from app.main.nectar.nectar_controller import api as nectar_controller
 from app.main.hubspot.hubspot_controller import api as hubspot_controller
 from app.main.rdstation.rdstation_controller import api as rdstation_controller
 
 app = Flask(__name__)
+CORS(app)
 blueprint = Blueprint("api", __name__)
 app.register_blueprint(blueprint)
 
@@ -17,6 +19,8 @@ api = Api(
     prefix="/api",
 )
 
+
+# Configuration to redirect http to https
 @app.before_request
 def before_request():
     if not request.is_secure:
@@ -24,7 +28,7 @@ def before_request():
         code = 301
         return redirect(url, code=code)
 
-# adicionado namespaces para rotas
+# Route namespacing
 api.add_namespace(nectar_controller, path="/nectar")
 api.add_namespace(hubspot_controller, path="/hubspot")
 api.add_namespace(rdstation_controller, path="/rdstation")
