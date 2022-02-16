@@ -1,4 +1,4 @@
-from flask import Flask, Blueprint
+from flask import Flask, Blueprint, request, redirect
 from flask_restx import Api
 
 from app.main.nectar.nectar_controller import api as nectar_controller
@@ -16,6 +16,13 @@ api = Api(
     description="Api de integrações com os seguintes CRMs:",
     prefix="/api",
 )
+
+@app.before_request
+def before_request():
+    if not request.is_secure:
+        url = request.url.replace('http://', 'https://', 1)
+        code = 301
+        return redirect(url, code=code)
 
 # adicionado namespaces para rotas
 api.add_namespace(nectar_controller, path="/nectar")
