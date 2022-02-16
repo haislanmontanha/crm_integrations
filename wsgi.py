@@ -1,5 +1,5 @@
-import app
-import Flask
+from app import app
+from os import environ
 
 if __name__ == "__main__":
     SERVER_HOST = environ.get("SERVER_HOST", "localhost")
