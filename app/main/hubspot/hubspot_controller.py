@@ -20,7 +20,7 @@ menu_email = "email"
 
 
 def get_url():
-    return util.get_url() + "client/"
+    return util.get_url() + "hubspot/"
 
 
 def home_menu(msg):
@@ -38,30 +38,6 @@ def home_menu(msg):
         "items": [
             {
                 "number": 1,
-                "text": "CPF",
-                "callback": {
-                    "endpoint": get_url() + "search_cpf",
-                    "data": {},
-                },
-            },
-            {
-                "number": 2,
-                "text": "CNPJ",
-                "callback": {
-                    "endpoint": get_url() + "search_cnpj",
-                    "data": {},
-                },
-            },
-            {
-                "number": 3,
-                "text": "Telefone",
-                "callback": {
-                    "endpoint": get_url() + "search_phone",
-                    "data": {},
-                },
-            },
-            {
-                "number": 4,
                 "text": "Email",
                 "callback": {
                     "endpoint": get_url() + "search_email",
@@ -169,10 +145,13 @@ def invalid_information(msg_menu):
             + " é inválido. Por favor informe um "
             + msg_menu
             + " válido.",
-            util.get_url() + "search_email",
+            get_url() + "search_email",
         )
     else:
-        return home_menu("Olá, por favor informe uma das seguintes informações.")
+        return response_question(
+            "Olá, por favor informe seu email.",
+            get_url(),
+        )
 
 
 def get_user(request_mz, msg_menu):
@@ -194,7 +173,9 @@ def get_user(request_mz, msg_menu):
             s1 = json.dumps(json_response)
             user = json.loads(s1)
 
-            if "results" in user:
+            result_size = len(json_response["results"])
+
+            if result_size > 0:
 
                 print(json_response["results"])
                 print(json_response["results"][0]["properties"])
@@ -223,16 +204,16 @@ class HubSpotController(Resource):
     def post(self):
         if request.is_json:
             mz = request.get_json()
-            nome = mz["contact"]["name"]
+            text = mz["text"]
 
             data = {
                 "filterGroups": [
                     {
                         "filters": [
                             {
-                                "propertyName": "firstname",
+                                "propertyName": "email",
                                 "operator": "EQ",
-                                "value": nome,
+                                "value": text,
                             }
                         ]
                     }

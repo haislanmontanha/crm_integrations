@@ -10,7 +10,7 @@ PRODUCTION = True
 class Utils(Resource):
     def get_url(self):
         if bool(PRODUCTION):
-            return "https://crmintegrations.herokuapp.com/"
+            return "https://crmintegrations.herokuapp.com/api/"
         else:
             return "http://localhost:5500/api/"
 
@@ -25,19 +25,19 @@ class Utils(Resource):
         return Client(
             "https://app.nectarcrm.com.br/crm/api/1/contatos/",
             "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2NDI3OTA4MDgsImV4cCI6MTY3NDMyMjM2OSwidXNlckxvZ2luIjoiaGFpc2xhbi5uYXNjaW1lbnRvQGdtYWlsLmNvbSIsInVzZXJJZCI6IjEyNjQ2NiIsInVzdWFyaW9NYXN0ZXJJZCI6IjEyNjQ2NSJ9.08lkZ8ou0mxda9Hq45J07elTRTpD-2MZYS6pYcMnOcw",
-            "https://itsstecnologia.com.br/blogs/wp-content/uploads/2021/04/integracao-na-empresa.png",
+            "https://leadster.com.br/blog/wp-content/uploads/2021/09/8.png",
         )
 
     def get_hubspot(self):
         return Client(
             "https://api.hubapi.com/crm/v3/objects/contacts/",
             "1558c7be-9e9c-40f2-931a-a72be68a200f",
-            "https://itsstecnologia.com.br/blogs/wp-content/uploads/2021/04/integracao-na-empresa.png",
+            "https://leadster.com.br/blog/wp-content/uploads/2021/09/9.png",
         )
 
     def get_rdstation(self):
         return Client(
             "https://api.rd.services/platform/contacts/",
             "adf54a9d729dea6410155f75bf251198",
-            "https://itsstecnologia.com.br/blogs/wp-content/uploads/2021/04/integracao-na-empresa.png",
+            "https://leadster.com.br/blog/wp-content/uploads/2021/09/3.png",
         )
