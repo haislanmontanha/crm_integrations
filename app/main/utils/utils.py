@@ -41,3 +41,10 @@ class Utils(Resource):
             "adf54a9d729dea6410155f75bf251198",
             "https://leadster.com.br/blog/wp-content/uploads/2021/09/3.png",
         )
+
+    def get_sales_funnel(self):
+        return Client(
+            "https://app.funildevendas.com.br/api/",
+            "7c13e23a-670c-47c9-b1a5-ac0ea6575792",
+            "https://app.funildevendas.com.br/Content/assets/img/funildevendas.png",
+        )
