@@ -8,5 +8,4 @@ COPY requirements.txt .
 RUN pip install -r requirements.txt
 COPY . /app
 
-ENTRYPOINT [ "/usr/local/bin/python" ]
-CMD [ "wsgi.py" ]
+CMD [ "python", "wsgi.py" ]
