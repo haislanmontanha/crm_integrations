@@ -1,4 +1,4 @@
-name: "Build ${{ github.event.repository.name }}"
+name: Build
 
 env:
   app_name: ${{ github.event.repository.name }}
