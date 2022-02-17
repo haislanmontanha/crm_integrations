@@ -1,0 +1,30 @@
+name: "Build ${{ github.event.repository.name }}"
+
+env:
+  app_name: ${{ github.event.repository.name }}
+  ghub_pkg_token: ${{ secrets.GHUB_CODE_TOKEN }}
+
+on: create
+
+jobs:
+  build-application:
+    name: Building container
+    runs-on: ubuntu-latest
+    steps:
+      - uses: igordcsouza/github-action-get-branch-name@master
+        env:
+          GITHUB_TOKEN: ${{ env.ghub_pkg_token }}
+      - id: branch_origin
+        run: |
+          echo "::set-output name=branch::${BRANCH_NAME}"
+      - uses: actions/checkout@v2
+      - name: Build and send image to registry
+        uses: elgohr/Publish-Docker-Github-Action@master
+        id: build
+        with:
+          registry: docker.pkg.github.com
+          username: ${{ github.repository_owner }}
+          password: ${{ env.ghub_pkg_token }}
+          name: topstechbr/${{ env.app_name }}/${{ env.app_name }}
+          tags: ${{ steps.short-sha.outputs.sha }}
+          dockerfile: Dockerfile
