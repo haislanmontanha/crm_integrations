@@ -149,7 +149,7 @@ def invalid_information(msg_menu):
         )
     else:
         return response_question(
-            "Olá, por favor informe seu email.",
+            "Olá, por favor informe seu email:",
             get_url(),
         )
 
