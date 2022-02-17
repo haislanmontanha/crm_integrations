@@ -31,3 +31,20 @@ jobs:
           name: topstechbr/${{ env.app_name }}/${{ env.app_name }}
           tags: ${{ steps.short-sha.outputs.sha }}
           dockerfile: Dockerfile
+
+  send-to-heroku:
+    name: Sent to Heroku
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      
+      - name: Build and push to Heroku
+        uses: gonuit/heroku-docker-deploy@v1.3.3
+        with:
+          email: ${{ secrets.HEROKU_EMAIL }}
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
+          dockerfile_directory: ./
+          dockerfile_name: Dockerfile
+          docker_options: "--no-cache"
