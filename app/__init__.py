@@ -10,17 +10,19 @@ app = Flask(__name__)
 blueprint = Blueprint("api", __name__)
 app.register_blueprint(blueprint)
 
+@app.route("/alive", methods=["GET"])
+def alive():
+  return "OK"
 
 api = Api(
     app,
-    title="Api de integrações com CRMs",
+    title="Api de integracoes com CRMs",
     version="1.0",
-    description="Api de integrações com os seguintes CRMs:",
+    description="Api de integracoes com os seguintes CRMs:",
     prefix="/api",
 )
 
 # Route namespacing
-api.add_namespace(health_check, path="/healthcheck")
 api.add_namespace(nectar_controller, path="/nectar")
 api.add_namespace(hubspot_controller, path="/hubspot")
 # api.add_namespace(rdstation_controller, path="/rdstation")
