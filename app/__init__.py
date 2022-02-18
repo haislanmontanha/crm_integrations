@@ -20,6 +20,7 @@ api = Api(
 )
 
 # Route namespacing
+api.add_namespace(health_check, path="/healthcheck")
 api.add_namespace(nectar_controller, path="/nectar")
 api.add_namespace(hubspot_controller, path="/hubspot")
 # api.add_namespace(rdstation_controller, path="/rdstation")

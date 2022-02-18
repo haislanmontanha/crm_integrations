@@ -14,13 +14,19 @@ jobs:
     name: Building container
     runs-on: ubuntu-latest
     steps:
+
       - uses: igordcsouza/github-action-get-branch-name@master
         env:
           GITHUB_TOKEN: ${{ env.ghub_pkg_token }}
-      - id: branch_origin
+          ghub_sha: ${{ github.sha }}
+
+      - name: short-sha
+        id: short-sha
         run: |
-          echo "::set-output name=branch::${BRANCH_NAME}"
+          echo "::set-output name=sha::$(echo "${{ env.ghub_sha }}" | cut -c1-8)"
+
       - uses: actions/checkout@v2
+
       - name: Build and send image to registry
         uses: elgohr/Publish-Docker-Github-Action@master
         id: build
@@ -32,19 +38,19 @@ jobs:
           tags: ${{ steps.short-sha.outputs.sha }}
           dockerfile: Dockerfile
 
-  send-to-heroku:
-    name: Sent to Heroku
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+  # send-to-heroku:
+  #   name: Sent to Heroku
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
       
-      - name: Build and push to Heroku
-        uses: gonuit/heroku-docker-deploy@v1.3.3
-        with:
-          email: ${{ secrets.HEROKU_EMAIL }}
-          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
-          dockerfile_directory: ./
-          dockerfile_name: Dockerfile
-          docker_options: "--no-cache"
+  #     - name: Build and push to Heroku
+  #       uses: gonuit/heroku-docker-deploy@v1.3.3
+  #       with:
+  #         email: ${{ secrets.HEROKU_EMAIL }}
+  #         heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+  #         heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
+  #         dockerfile_directory: ./
+  #         dockerfile_name: Dockerfile
+  #         docker_options: "--no-cache"
