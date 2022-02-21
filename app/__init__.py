@@ -10,9 +10,11 @@ app = Flask(__name__)
 blueprint = Blueprint("api", __name__)
 app.register_blueprint(blueprint)
 
+
 @app.route("/alive", methods=["GET"])
 def alive():
-  return "OK"
+    return "OK"
+
 
 api = Api(
     app,

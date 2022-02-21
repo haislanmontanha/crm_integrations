@@ -5,6 +5,7 @@ from flask_restx import Namespace
 
 api = Namespace("health_check", description="Health check")
 
+
 @api.route("/alive", methods=["GET"])
 def alive():
-  return "OK"
+    return "OK"

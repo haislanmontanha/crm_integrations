@@ -21,6 +21,13 @@ class Utils(Resource):
             "User-Agent": "request",
         }
 
+    def get_headers_G(self, api_key):
+        return {
+            "Accept": "application/json",
+            "Authorization": "Basic " + api_key,
+            "User-Agent": "request",
+        }
+
     def get_nectar(self):
         return Client(
             "https://app.nectarcrm.com.br/crm/api/1/contatos/",
@@ -44,7 +51,7 @@ class Utils(Resource):
 
     def get_sales_funnel(self):
         return Client(
-            "https://app.funildevendas.com.br/api/",
+            "https://sandbox.funildevendas.com.br/api/",
             "7c13e23a-670c-47c9-b1a5-ac0ea6575792",
             "https://app.funildevendas.com.br/Content/assets/img/funildevendas.png",
         )
