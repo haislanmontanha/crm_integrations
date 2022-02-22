@@ -11,7 +11,7 @@ util = Utils()
 client = util.get_hubspot()
 
 headers_post = {"Content-Type": "application/json"}
-params = {"api_token": client.api_key}
+params = {"hapikey": client.api_key, "limit": 1}
 
 menu_cpf = "cpf"
 menu_cnpj = "cnpj"
@@ -43,7 +43,7 @@ def home_menu(msg):
                     "endpoint": get_url() + "search_email",
                     "data": {},
                 },
-            },
+            }
         ],
     }
 
@@ -148,10 +148,7 @@ def invalid_information(msg_menu):
             get_url() + "search_email",
         )
     else:
-        return response_question(
-            "Olá, por favor informe seu email:",
-            get_url(),
-        )
+        return response_question("Olá, por favor informe seu email:", get_url())
 
 
 def get_user(request_mz, msg_menu):
@@ -221,11 +218,45 @@ class HubSpotController(Resource):
             }
 
             request_mz = requests.post(
-                client.api + "search?hapikey=" + client.api_key,
+                client.api + "contacts/search?hapikey=" + client.api_key,
                 data=json.dumps(data),
                 headers=headers_post,
             )
 
             return get_user(request_mz, "home_menu")
+
+        return {"error": "Request must be JSON"}, 415
+
+
+@api.route("/search_next_activity")
+class PersonNextActivityController(Resource):
+    def post(self):
+        if request.is_json:
+
+            mz = request.get_json()
+            data = mz["data"]
+            data_size = len(data)
+
+            print(f"Content: {data} Size: {data_size}")
+
+            if data_size == 0:
+                return home_menu(
+                    "Olá, não foi possivel encontrar nenhuma atividade, por favor informe uma das seguintes informações."
+                )
+            elif data["user"]["hs_object_id"]:
+
+                user_id = data["user"]["hs_object_id"]
+
+                print(f"User id: {user_id}")
+
+                request_mz = requests.get(
+                    client.api + "tickets",
+                    params=params,
+                    headers=util.get_headers(client.api_key),
+                )
+
+                print(f"Url: {request_mz.url} Content: {request_mz.json()}")
+
+                return response_information("", ""), 201
 
         return {"error": "Request must be JSON"}, 415

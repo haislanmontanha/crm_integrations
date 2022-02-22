@@ -37,7 +37,7 @@ class Utils(Resource):
 
     def get_hubspot(self):
         return Client(
-            "https://api.hubapi.com/crm/v3/objects/contacts/",
+            "https://api.hubapi.com/crm/v3/objects/",
             "1558c7be-9e9c-40f2-931a-a72be68a200f",
             "https://leadster.com.br/blog/wp-content/uploads/2021/09/9.png",
         )
