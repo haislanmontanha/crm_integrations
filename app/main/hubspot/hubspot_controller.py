@@ -1,7 +1,7 @@
-import os
 import requests
 import json
 from flask import request
+from datetime import datetime
 from flask_restx import Resource, Namespace
 from app.main.utils.utils import Utils
 
@@ -11,12 +11,13 @@ util = Utils()
 client = util.get_hubspot()
 
 headers_post = {"Content-Type": "application/json"}
-params = {"hapikey": client.api_key, "limit": 1}
+params = {"hapikey": client.api_key, "limit": 1, "archived": False}
 
 menu_cpf = "cpf"
 menu_cnpj = "cnpj"
 menu_phone = "telefone"
 menu_email = "email"
+menu_next_activity = "next_activity"
 
 
 def get_url():
@@ -257,6 +258,47 @@ class PersonNextActivityController(Resource):
 
                 print(f"Url: {request_mz.url} Content: {request_mz.json()}")
 
-                return response_information("", ""), 201
+                if request_mz.status_code == 200:
+                    print("The request was a success!")
+                    json_response = request_mz.json()
+                    json_size = len(json_response)
+
+                    print(
+                        f"Status Code: {request_mz.status_code}, Content: {json_response}, Size Json {json_size}"
+                    )
+
+                    if json_size == 0:
+                        return (
+                            invalid_information(
+                                menu_next_activity,
+                                get_url() + "client/search_next_activity",
+                            ),
+                            201,
+                        )
+                    else:
+
+                        results = json_response["results"][0]
+
+                        properties = results["properties"]
+                        content = properties["content"]
+                        priority = properties["hs_ticket_priority"]
+                        subject = properties["subject"]
+                        createdate = properties["createdate"]
+
+                        f = "%Y-%m-%dT%H:%M:%S.%fZ"
+
+                        data_create_f = datetime.strptime(createdate, f)
+
+                        msg_information = (
+                            f"Titulo: {subject},"
+                            f"\n Prioridade: {priority},"
+                            f"\n Tarefa: {content},"
+                            f"\n Criada em: {data_create_f}"
+                        )
+
+                        return response_information(msg_information, ""), 201
+
+                elif request_mz.status_code == 404:
+                    return {"error": "Request must be JSON"}, 404
 
         return {"error": "Request must be JSON"}, 415

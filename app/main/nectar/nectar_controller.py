@@ -21,7 +21,7 @@ menu_next_activity = "next_activity"
 
 
 def get_url():
-    return util.get_url() + "client/"
+    return util.get_url() + "nectar/"
 
 
 def json_start():
@@ -369,7 +369,7 @@ class PersonNextActivityController(Resource):
                         return (
                             invalid_information(
                                 menu_next_activity,
-                                get_url() + "client/search_next_activity",
+                                get_url() + "/search_next_activity",
                             ),
                             201,
                         )
