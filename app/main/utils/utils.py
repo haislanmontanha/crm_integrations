@@ -10,7 +10,7 @@ PRODUCTION = True
 class Utils(Resource):
     def get_url(self):
         if bool(PRODUCTION):
-            return "https://crmintegrations.herokuapp.com/api/"
+            return "https://crmint-stg.tops.app.br/api/"
         else:
             return "http://localhost:5500/api/"
 

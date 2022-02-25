@@ -1,4 +1,3 @@
-import os
 import requests
 import json
 from flask import request
@@ -22,21 +21,6 @@ menu_next_activity = "next_activity"
 
 def get_url():
     return util.get_url() + "nectar/"
-
-
-def json_start():
-    return {
-        "id": 215123,
-        "text": "Hello world!",
-        "contact": {
-            "uid": "15295",
-            "type": "WHATSAPP",
-            "key": "+5514991670521",
-            "name": "Haislan",
-            "fields": {"cpf": "38724981850", "celular": "(11) 11111-1111"},
-        },
-        "data": {},
-    }
 
 
 def home_menu(msg):

@@ -11,7 +11,7 @@ util = Utils()
 client = util.get_hubspot()
 
 headers_post = {"Content-Type": "application/json"}
-params = {"hapikey": client.api_key, "limit": 1, "archived": False}
+params = {"hapikey": client.api_key, "archived": False}
 
 menu_cpf = "cpf"
 menu_cnpj = "cnpj"
