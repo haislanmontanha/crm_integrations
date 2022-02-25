@@ -52,22 +52,6 @@ def home_menu(msg):
                     "data": {},
                 },
             },
-            {
-                "number": 3,
-                "text": "Telefone",
-                "callback": {
-                    "endpoint": get_url() + "search_phone",
-                    "data": {},
-                },
-            },
-            {
-                "number": 4,
-                "text": "Email",
-                "callback": {
-                    "endpoint": get_url() + "search_email",
-                    "data": {},
-                },
-            },
         ],
     }
 
@@ -172,7 +156,7 @@ def invalid_information(msg_menu, url_callback):
             url_callback,
         )
     else:
-        return home_menu("Olá, por favor informe uma das seguintes informações.")
+        return home_menu("Olá, por favor informe seu cpf ou cnpj:")
 
 
 def getUser(request_mz, msg_menu):
