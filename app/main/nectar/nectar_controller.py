@@ -17,6 +17,7 @@ menu_cnpj = "cnpj"
 menu_phone = "telefone"
 menu_email = "email"
 menu_next_activity = "next_activity"
+menu_new_opportunity = "new_opportunity"
 
 
 def get_url():
@@ -76,12 +77,20 @@ def menu_user(user_json, msg):
                     "endpoint": get_url() + "search_next_activity",
                     "data": {"user": user_json},
                 },
-            }
+            },
+            {
+                "number": 1,
+                "text": "Nova Oportunidade",
+                "callback": {
+                    "endpoint": get_url() + "new_opportunity",
+                    "data": {"user": user_json},
+                },
+            },
         ],
     }
 
 
-def response_question(text, callback):
+def response_question(text, callback, data):
     return {
         "type": "QUESTION",
         "text": text,
@@ -93,7 +102,7 @@ def response_question(text, callback):
                 "url": client.company_logo,
             }
         ],
-        "callback": {"endpoint": callback, "data": {}},
+        "callback": {"endpoint": callback, "data": data},
     }
 
 
@@ -118,7 +127,7 @@ def response_information(text, urldoc):
     }
 
 
-def invalid_information(msg_menu, url_callback):
+def invalid_information(msg_menu, url_callback, data):
     if msg_menu == menu_cpf:
         return response_question(
             "O "
@@ -127,6 +136,7 @@ def invalid_information(msg_menu, url_callback):
             + msg_menu
             + " válido.",
             url_callback,
+            data,
         )
     elif msg_menu == menu_cnpj:
         return response_question(
@@ -136,6 +146,7 @@ def invalid_information(msg_menu, url_callback):
             + msg_menu
             + " válido.",
             url_callback,
+            data,
         )
     elif msg_menu == menu_phone:
         return response_question(
@@ -145,6 +156,7 @@ def invalid_information(msg_menu, url_callback):
             + msg_menu
             + " válido.",
             url_callback,
+            data,
         )
     elif msg_menu == menu_email:
         return response_question(
@@ -154,6 +166,7 @@ def invalid_information(msg_menu, url_callback):
             + msg_menu
             + " válido.",
             url_callback,
+            data,
         )
     else:
         return home_menu("Olá, por favor informe seu cpf ou cnpj:")
@@ -171,7 +184,7 @@ def getUser(request_mz, msg_menu):
         )
 
         if json_size == 0:
-            return invalid_information(msg_menu, ""), 201
+            return invalid_information(msg_menu, "", {}), 201
         else:
 
             s1 = json.dumps(json_response)
@@ -193,7 +206,7 @@ def getUser(request_mz, msg_menu):
 
                 return menu_user(user_json, msg), 201
             else:
-                return invalid_information(msg_menu, ""), 201
+                return invalid_information(msg_menu, "", {}), 201
 
     elif request_mz.status_code == 404:
         return {"error": "Request must be JSON"}, 404
@@ -338,6 +351,7 @@ class PersonNextActivityController(Resource):
                             invalid_information(
                                 menu_next_activity,
                                 get_url() + "/search_next_activity",
+                                {},
                             ),
                             201,
                         )
@@ -370,3 +384,95 @@ class PersonNextActivityController(Resource):
                     return {"error": "Request must be JSON"}, 404
 
         return {"error": "Request must be JSON"}, 415
+
+
+@api.route("/new_opportunity")
+class NewOpportunity(Resource):
+    def post(self):
+        if request.is_json:
+
+            mz = request.get_json()
+            data = mz["data"]
+            text = mz["text"]
+            data_size = len(data)
+
+            print(f"Content: {data} Size: {data_size}")
+
+            opportunity_question = ""
+            opportunity_json = {}
+
+            if data_size == 0:
+
+                opportunity_question = "Informe o nome da oportunidade:"
+                opportunity_json = {"etapa": 1}
+
+            elif int(data["etapa"]) == 1:
+
+                opportunity_question = "Informe o valor avulso:"
+                opportunity_json = {"etapa": 2, "new_opportunity": {"nome": text}}
+
+            elif int(data["etapa"]) == 2:
+
+                opportunity_question = "Informe o valor mensal:"
+                opportunity_json = {
+                    "etapa": 3,
+                    "new_opportunity": {
+                        "nome": data["new_opportunity"]["nome"],
+                        "valor_avulso": text,
+                    },
+                }
+
+            elif int(data["etapa"]) == 3:
+
+                opportunity_question = "Informe a probabilidade:"
+                opportunity_json = {
+                    "etapa": 4,
+                    "new_opportunity": {
+                        "nome": data["new_opportunity"]["nome"],
+                        "valor_avulso": data["new_opportunity"]["valor_avulso"],
+                        "valor_mensal": text,
+                    },
+                }
+
+            elif int(data["etapa"]) == 4:
+
+                opportunity_question = "Informe a observação:"
+                opportunity_json = {
+                    "etapa": 5,
+                    "new_opportunity": {
+                        "nome": data["new_opportunity"]["nome"],
+                        "valor_avulso": data["new_opportunity"]["valor_avulso"],
+                        "valor_mensal": data["new_opportunity"]["valor_mensal"],
+                        "probabilidade": text,
+                    },
+                }
+
+            elif int(data["etapa"]) == 5:
+
+                opportunity_question = "Deseja enviar? "
+                opportunity_json = {
+                    "etapa": 6,
+                    "dataLimite": {
+                        "nome": data["new_opportunity"]["nome"],
+                        "valor_avulso": data["new_opportunity"]["valor_avulso"],
+                        "valor_mensal": data["new_opportunity"]["valor_mensal"],
+                        "probabilidade": data["new_opportunity"]["probabilidade"],
+                        "observacao": text,
+                    },
+                }
+
+            elif int(data["etapa"]) == 6:
+
+                opportunity_json = {}
+
+            return (
+                response_question(
+                    opportunity_question,
+                    get_url() + "new_opportunity",
+                    opportunity_json,
+                ),
+                201,
+            )
+
+        else:
+            return {"error": "Request must be JSON"}, 415
