@@ -79,7 +79,7 @@ def menu_user(user_json, msg):
                 },
             },
             {
-                "number": 1,
+                "number": 2,
                 "text": "Nova Oportunidade",
                 "callback": {
                     "endpoint": get_url() + "new_opportunity",
