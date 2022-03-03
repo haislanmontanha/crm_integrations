@@ -130,42 +130,26 @@ def response_information(text, urldoc):
 def invalid_information(msg_menu, url_callback, data):
     if msg_menu == menu_cpf:
         return response_question(
-            "O "
-            + msg_menu
-            + " é inválido. Por favor informe um "
-            + msg_menu
-            + " válido.",
-            url_callback,
+            "Por favor informe um " + msg_menu + " válido.",
+            get_url() + "search_cpf",
             data,
         )
     elif msg_menu == menu_cnpj:
         return response_question(
-            "O "
-            + msg_menu
-            + " é inválido. Por favor informe um "
-            + msg_menu
-            + " válido.",
-            url_callback,
+            "Por favor informe um " + msg_menu + " válido.",
+            get_url() + "search_cnpj",
             data,
         )
     elif msg_menu == menu_phone:
         return response_question(
-            "O "
-            + msg_menu
-            + " é inválido. Por favor informe um "
-            + msg_menu
-            + " válido.",
-            url_callback,
+            "Por favor informe um " + msg_menu + " válido.",
+            get_url() + "search_phone",
             data,
         )
     elif msg_menu == menu_email:
         return response_question(
-            "O "
-            + msg_menu
-            + " é inválido. Por favor informe um "
-            + msg_menu
-            + " válido.",
-            url_callback,
+            "Por favor informe um " + msg_menu + " válido.",
+            get_url() + "search_email",
             data,
         )
     else:
