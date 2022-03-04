@@ -378,6 +378,7 @@ class NewOpportunity(Resource):
             mz = request.get_json()
             data = mz["data"]
             text = mz["text"]
+
             data_size = len(data)
 
             print(f"Content: {data} Size: {data_size}")
@@ -385,32 +386,39 @@ class NewOpportunity(Resource):
             opportunity_question = ""
             opportunity_json = {}
 
-            if data_size == 0:
+            stage = 0
+
+            try:
+                stage = int(data["stage"])
+            except:
+                stage = 0
+
+            if stage == 0:
 
                 opportunity_question = "Informe o nome da oportunidade:"
-                opportunity_json = {"etapa": 1}
+                opportunity_json = {"stage": 1}
 
-            elif int(data["etapa"]) == 1:
+            elif stage == 1:
 
                 opportunity_question = "Informe o valor avulso:"
-                opportunity_json = {"etapa": 2, "new_opportunity": {"nome": text}}
+                opportunity_json = {"stage": 2, "new_opportunity": {"nome": text}}
 
-            elif int(data["etapa"]) == 2:
+            elif stage == 2:
 
                 opportunity_question = "Informe o valor mensal:"
                 opportunity_json = {
-                    "etapa": 3,
+                    "stage": 3,
                     "new_opportunity": {
                         "nome": data["new_opportunity"]["nome"],
                         "valor_avulso": text,
                     },
                 }
 
-            elif int(data["etapa"]) == 3:
+            elif stage == 3:
 
                 opportunity_question = "Informe a probabilidade:"
                 opportunity_json = {
-                    "etapa": 4,
+                    "stage": 4,
                     "new_opportunity": {
                         "nome": data["new_opportunity"]["nome"],
                         "valor_avulso": data["new_opportunity"]["valor_avulso"],
@@ -418,11 +426,11 @@ class NewOpportunity(Resource):
                     },
                 }
 
-            elif int(data["etapa"]) == 4:
+            elif stage == 4:
 
                 opportunity_question = "Informe a observação:"
                 opportunity_json = {
-                    "etapa": 5,
+                    "stage": 5,
                     "new_opportunity": {
                         "nome": data["new_opportunity"]["nome"],
                         "valor_avulso": data["new_opportunity"]["valor_avulso"],
@@ -431,11 +439,11 @@ class NewOpportunity(Resource):
                     },
                 }
 
-            elif int(data["etapa"]) == 5:
+            elif stage == 5:
 
                 opportunity_question = "Deseja enviar? "
                 opportunity_json = {
-                    "etapa": 6,
+                    "stage": 6,
                     "dataLimite": {
                         "nome": data["new_opportunity"]["nome"],
                         "valor_avulso": data["new_opportunity"]["valor_avulso"],
@@ -445,7 +453,7 @@ class NewOpportunity(Resource):
                     },
                 }
 
-            elif int(data["etapa"]) == 6:
+            elif stage == 6:
 
                 opportunity_json = {}
 
