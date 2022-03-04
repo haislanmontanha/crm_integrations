@@ -30,7 +30,7 @@ def home_menu(msg):
         "text": msg,
         "attachments": [
             {
-                "position": "BEFORE",
+                "position": "AFTER",
                 "type": "IMAGE",
                 "name": "image.png",
                 "url": client.company_logo,
@@ -96,7 +96,7 @@ def response_question(text, callback, data):
         "text": text,
         "attachments": [
             {
-                "position": "BEFORE",
+                "position": "AFTER",
                 "type": "IMAGE",
                 "name": "image.png",
                 "url": client.company_logo,
@@ -450,7 +450,7 @@ class NewOpportunity(Resource):
                 opportunity_question = "Deseja enviar? "
                 opportunity_json = {
                     "stage": 6,
-                    "dataLimite": {
+                    "new_opportunity": {
                         "nome": data["new_opportunity"]["nome"],
                         "valor_avulso": data["new_opportunity"]["valor_avulso"],
                         "valor_mensal": data["new_opportunity"]["valor_mensal"],
