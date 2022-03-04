@@ -378,6 +378,7 @@ class NewOpportunity(Resource):
             mz = request.get_json()
             data = mz["data"]
             text = mz["text"]
+            user = data["user"]
 
             data_size = len(data)
 
@@ -385,8 +386,6 @@ class NewOpportunity(Resource):
 
             opportunity_question = ""
             opportunity_json = {}
-
-            stage = 0
 
             try:
                 stage = int(data["stage"])
@@ -396,12 +395,16 @@ class NewOpportunity(Resource):
             if stage == 0:
 
                 opportunity_question = "Informe o nome da oportunidade:"
-                opportunity_json = {"stage": 1}
+                opportunity_json = {"stage": 1, "user": user}
 
             elif stage == 1:
 
                 opportunity_question = "Informe o valor avulso:"
-                opportunity_json = {"stage": 2, "new_opportunity": {"nome": text}}
+                opportunity_json = {
+                    "stage": 2,
+                    "new_opportunity": {"nome": text},
+                    "user": user,
+                }
 
             elif stage == 2:
 
@@ -412,6 +415,7 @@ class NewOpportunity(Resource):
                         "nome": data["new_opportunity"]["nome"],
                         "valor_avulso": text,
                     },
+                    "user": user,
                 }
 
             elif stage == 3:
@@ -424,6 +428,7 @@ class NewOpportunity(Resource):
                         "valor_avulso": data["new_opportunity"]["valor_avulso"],
                         "valor_mensal": text,
                     },
+                    "user": user,
                 }
 
             elif stage == 4:
@@ -437,6 +442,7 @@ class NewOpportunity(Resource):
                         "valor_mensal": data["new_opportunity"]["valor_mensal"],
                         "probabilidade": text,
                     },
+                    "user": user,
                 }
 
             elif stage == 5:
@@ -451,11 +457,12 @@ class NewOpportunity(Resource):
                         "probabilidade": data["new_opportunity"]["probabilidade"],
                         "observacao": text,
                     },
+                    "user": user,
                 }
 
             elif stage == 6:
 
-                opportunity_json = {}
+                opportunity_json = {"user": user}
 
             return (
                 response_question(
